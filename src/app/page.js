@@ -145,6 +145,7 @@ export default function Home() {
                   <th className="text-black  p-2">Longitude</th>
                   <th className="text-black  p-2">Phone</th>
                   <th className="text-black  p-2">Address</th>
+                  <th>Link</th>
                 </tr>
               </thead>
               <tbody>
@@ -158,6 +159,11 @@ export default function Home() {
                     <td className="text-black  p-2">{b.lon}</td>
                     <td className="text-black  p-2">{b.phone}</td>
                     <td className="text-black  p-2">{b.address}</td>
+                   <td className="text-black p-2 w-100 text-center">
+                      <a href={`https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lon}`} target="_blank" rel="noopener noreferrer">
+                        View on Map
+                      </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>
