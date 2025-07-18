@@ -1,33 +1,31 @@
-🗺️ Business Finder – OpenStreetMap POI Finder
+🗺️ Business Finder – Nearby Business Discovery using OpenStreetMap
 Live: https://business-finder-wine.vercel.app
-Stack: Next.js, OpenStreetMap (Nominatim API), Tailwind CSS
+Stack: Next.js, Tailwind CSS, OpenStreetMap API
 
 📌 Overview
-Business Finder is a location-based web app that helps you find nearby businesses using OpenStreetMap's Nominatim API. Perfect for travelers, field agents, or local SEO research.
+A lightweight app to search and display nearby businesses based on user-input location. Great for travelers, marketers, or researchers looking for location-based data.
 
 ✨ Features
-🧭 Search any place and display local businesses
+🧭 Search location and display business POIs
 
-📍 Data pulled from OpenStreetMap in real-time
+🌍 Uses OpenStreetMap (Nominatim) for business discovery
 
-📞 Extract business name, address, phone, and website
+🏢 Shows name, phone, address, and website
 
-🖨️ Export results as PDF to use as CV/portfolio/field report
+🖨️ Export results as PDF for offline use
 
-⚡ Simple, responsive UI optimized for mobile
+⚡ Simple and responsive UI
 
-🔥 Ideal Use Case
-Field research & business outreach
+🧪 Usage
+git clone https://github.com/your-username/business-finder.git
+cd business-finder
+npm install
+npm run dev
+No API key required (uses free public OpenStreetMap API).
 
-Local SEO or marketing prospecting
+📂 Structure
+/pages        # Route-based pages (Next.js)
+/components   # Search bar, Map, Result table
+/lib          # Nominatim API fetcher
 
-Freelancer demo for scraping/location tools
 
-📦 Folder Structure
-pages/ – Standard Next.js pages
-
-components/ – Map and result display UI
-
-lib/ – API helpers
-
-If you want, I can also add installation instructions (npm install, .env, etc.) and even prepare a vercel.json or Dockerfile.
