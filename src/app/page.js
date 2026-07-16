@@ -295,6 +295,17 @@ export default function Home() {
             m.pinterest = enr.pinterest || m.pinterest; m.snapchat = enr.snapchat || m.snapchat;
             m.discord = enr.discord || m.discord; m.telegram = enr.telegram || m.telegram;
             m.whatsapp = enr.whatsapp || m.whatsapp;
+            m.medium = enr.medium || m.medium; m.github = enr.github || m.github;
+            m.glassdoor = enr.glassdoor || m.glassdoor; m.crunchbase = enr.crunchbase || m.crunchbase;
+            m.angellist = enr.angellist || m.angellist; m.behance = enr.behance || m.behance;
+            m.dribbble = enr.dribbble || m.dribbble; m.twitch = enr.twitch || m.twitch;
+            m.reddit = enr.reddit || m.reddit; m.yelp = enr.yelp || m.yelp;
+            m.foursquare = enr.foursquare || m.foursquare; m.tripadvisor = enr.tripadvisor || m.tripadvisor;
+            m.imdb = enr.imdb || m.imdb; m.etsy = enr.etsy || m.etsy;
+            m.soundcloud = enr.soundcloud || m.soundcloud; m.spotify = enr.spotify || m.spotify;
+            m.vimeo = enr.vimeo || m.vimeo; m.patreon = enr.patreon || m.patreon;
+            m.producthunt = enr.producthunt || m.producthunt; m.trustpilot = enr.trustpilot || m.trustpilot;
+            m.g2 = enr.g2 || m.g2;
             m.type = enr.type && enr.type !== 'Type not specified' ? enr.type : m.type;
             m.category = enr.category && enr.category !== 'Category not specified' ? enr.category : m.category;
             m.employees = enr.employees || m.employees; m._data_score = enr._data_score || m._data_score;
@@ -358,6 +369,17 @@ export default function Home() {
       Pinterest: b.pinterest || '', Snapchat: b.snapchat || '',
       Discord: b.discord || '', Telegram: b.telegram || '',
       WhatsApp: b.whatsapp || '',
+      Medium: b.medium || '', GitHub: b.github || '',
+      Glassdoor: b.glassdoor || '', Crunchbase: b.crunchbase || '',
+      AngelList: b.angellist || '', Behance: b.behance || '',
+      Dribbble: b.dribbble || '', Twitch: b.twitch || '',
+      Reddit: b.reddit || '', Yelp: b.yelp || '',
+      Foursquare: b.foursquare || '', TripAdvisor: b.tripadvisor || '',
+      IMDb: b.imdb || '', Etsy: b.etsy || '',
+      SoundCloud: b.soundcloud || '', Spotify: b.spotify || '',
+      Vimeo: b.vimeo || '', Patreon: b.patreon || '',
+      ProductHunt: b.producthunt || '', Trustpilot: b.trustpilot || '',
+      G2: b.g2 || '',
       Employees: b.employees?.length ? b.employees.map(e => `${e.name}${e.title ? ` (${e.title})` : ''}${e.email ? ` - ${e.email}` : ''}`).join('; ') : '',
       'Data Score': b._data_score !== undefined ? `${b._data_score}%` : '',
       'Size Hint': b._size_hint || '',
@@ -403,6 +425,17 @@ export default function Home() {
         m.pinterest = enr.pinterest || m.pinterest; m.snapchat = enr.snapchat || m.snapchat;
         m.discord = enr.discord || m.discord; m.telegram = enr.telegram || m.telegram;
         m.whatsapp = enr.whatsapp || m.whatsapp;
+        m.medium = enr.medium || m.medium; m.github = enr.github || m.github;
+        m.glassdoor = enr.glassdoor || m.glassdoor; m.crunchbase = enr.crunchbase || m.crunchbase;
+        m.angellist = enr.angellist || m.angellist; m.behance = enr.behance || m.behance;
+        m.dribbble = enr.dribbble || m.dribbble; m.twitch = enr.twitch || m.twitch;
+        m.reddit = enr.reddit || m.reddit; m.yelp = enr.yelp || m.yelp;
+        m.foursquare = enr.foursquare || m.foursquare; m.tripadvisor = enr.tripadvisor || m.tripadvisor;
+        m.imdb = enr.imdb || m.imdb; m.etsy = enr.etsy || m.etsy;
+        m.soundcloud = enr.soundcloud || m.soundcloud; m.spotify = enr.spotify || m.spotify;
+        m.vimeo = enr.vimeo || m.vimeo; m.patreon = enr.patreon || m.patreon;
+        m.producthunt = enr.producthunt || m.producthunt; m.trustpilot = enr.trustpilot || m.trustpilot;
+        m.g2 = enr.g2 || m.g2;
         m.type = enr.type && enr.type !== 'Type not specified' ? enr.type : m.type;
         m.category = enr.category && enr.category !== 'Category not specified' ? enr.category : m.category;
         m.employees = enr.employees || m.employees; m._data_score = enr._data_score || m._data_score;
@@ -651,6 +684,13 @@ export default function Home() {
                         {b.hr_email && <p style={{ fontWeight: 700, fontSize: '12px', margin: '2px 0', color: '#ef4444' }}>HR: {b.hr_email}</p>}
                         {b.website && b.website !== 'Website not available' && <p style={{ margin: '4px 0' }}><a href={b.website} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '12px', color: 'var(--accent)' }}>WEBSITE</a></p>}
                         {b.linkedin && <p style={{ margin: '2px 0' }}><a href={`https://${b.linkedin}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '12px', color: '#0a66c2' }}>LINKEDIN</a></p>}
+                        {b.github && <p style={{ margin: '2px 0' }}><a href={`https://${b.github}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#333' }}>GITHUB</a></p>}
+                        {b.glassdoor && <p style={{ margin: '2px 0' }}><a href={`https://${b.glassdoor}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#0caa41' }}>GLASSDOOR</a></p>}
+                        {b.crunchbase && <p style={{ margin: '2px 0' }}><a href={`https://${b.crunchbase}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#0288d1' }}>CRUNCHBASE</a></p>}
+                        {b.yelp && <p style={{ margin: '2px 0' }}><a href={`https://${b.yelp}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#d32323' }}>YELP</a></p>}
+                        {b.tripadvisor && <p style={{ margin: '2px 0' }}><a href={`https://${b.tripadvisor}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#00af87' }}>TRIPADVISOR</a></p>}
+                        {b.reddit && <p style={{ margin: '2px 0' }}><a href={`https://${b.reddit}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#ff4500' }}>REDDIT</a></p>}
+                        {b.medium && <p style={{ margin: '2px 0' }}><a href={`https://${b.medium}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#000' }}>MEDIUM</a></p>}
                         {b.opening_hours && b.opening_hours !== 'Hours not available' && <p style={{ ...S.muted, fontSize: '11px', margin: '4px 0' }}>{b.opening_hours}</p>}
                         {b.cuisine && <p style={{ ...S.muted, fontSize: '10px', margin: '2px 0' }}>Cuisine: {b.cuisine}</p>}
                         <a href={b.google_maps_url} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: 'var(--accent)', marginTop: '8px', display: 'inline-block' }}>VIEW LARGER MAP &rarr;</a>
@@ -707,6 +747,13 @@ export default function Home() {
                           {b.discord && <div style={{ marginTop: '2px' }}><a href={`https://${b.discord}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#5865f2' }}>DC</a></div>}
                           {b.telegram && <div style={{ marginTop: '2px' }}><a href={`https://${b.telegram}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#0088cc' }}>TG</a></div>}
                           {b.whatsapp && <div style={{ marginTop: '2px' }}><a href={`https://wa.me/${b.whatsapp}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#25d366' }}>WA</a></div>}
+                          {b.medium && <div style={{ marginTop: '2px' }}><a href={`https://${b.medium}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#000' }}>MED</a></div>}
+                          {b.github && <div style={{ marginTop: '2px' }}><a href={`https://${b.github}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#333' }}>GH</a></div>}
+                          {b.glassdoor && <div style={{ marginTop: '2px' }}><a href={`https://${b.glassdoor}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#0caa41' }}>GLASS</a></div>}
+                          {b.crunchbase && <div style={{ marginTop: '2px' }}><a href={`https://${b.crunchbase}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#0288d1' }}>CB</a></div>}
+                          {b.yelp && <div style={{ marginTop: '2px' }}><a href={`https://${b.yelp}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#d32323' }}>YELP</a></div>}
+                          {b.tripadvisor && <div style={{ marginTop: '2px' }}><a href={`https://${b.tripadvisor}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#00af87' }}>TA</a></div>}
+                          {b.reddit && <div style={{ marginTop: '2px' }}><a href={`https://${b.reddit}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#ff4500' }}>RED</a></div>}
                           {(b._enriched && b.email_patterns && b.email_patterns.length > 0) && (
                             <div style={{ marginTop: '6px', fontSize: '10px' }}>
                               <details>

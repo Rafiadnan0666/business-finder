@@ -5,16 +5,75 @@ const EMAIL_PATTERNS = [
   'finance','accounting','marketing','pr','media','press','operations','logistics','orders','billing',
   'bookings','reservations','appointments','customercare','customerrelations','owner','manager',
   'director','ceo','president','founder','chairman','secretary','reception','receptionist',
-  'frontdesk','switchboard','head','chief','executive','admin@'
+  'frontdesk','switchboard','head','chief','executive','admin@',
+  'inquiries','enquire','customers','customer','service','serviceuk','serviceus','customersupport',
+  'techsupport','supportteam','helpdesk','ithelp','webmaster','hostmaster','postmaster',
+  'newsletter','subscribe','unsubscribe','notifications','no-reply','noreply',
+  'account','accounts','billing','payments','invoice','invoices','receivables','payables',
+  'purchasing','supply','warehouse','distribution','freight','shipping',
+  'returns','refunds','warranty','guarantee','claims','insurance',
+  'legal','compliance','audit','risk','security','privacy','dpo',
+  'investorrelations','investors','shareholders','ir',
+  'communications','corpcomms','internalcomms',
+  'events','conferences','training','education','learning','academy',
+  'research','rnd','development','product','engineering','it','dev','tech',
+  'analytics','data','reporting','businessintelligence','bi',
+  'strategy','planning','corporate','corp','global','international',
+  'admins','sysadmin','network','server','infrastructure',
+  'creative','design','ux','graphics','brand',
+  'sourcing','talentacquisition','workforce','staffing','employeerelations',
+  'interview','onboarding','offboarding','benefits','payroll','compensation',
+  'wellness','safety','health','environment','quality'
 ];
 
-const HR_PREFIXES = ['hr','careers','recruitment','jobs','hiring','talent','people','personnel','hrteam','hrdept','humanresources','staffing','workwithus','joinus','career','job','recruiter','talentacquisition','hrdepartment','employeerelations','workforce'];
+const HR_PREFIXES = ['hr','careers','recruitment','jobs','hiring','talent','people','personnel','hrteam','hrdept','humanresources','staffing','workwithus','joinus','career','job','recruiter','talentacquisition','hrdepartment','employeerelations','workforce','onboarding','offboarding','payroll','benefits','compensation','wellness','safety','employers','staffingagency','workforceplanning'];
 
 const SKIP_PATTERNS = ['noreply','no-reply','donotreply','example.com','domain.com','yourname','your@','@email.com','@gmail.com','@yahoo.com','@hotmail.com','@outlook.com','@aol.com','@mail.com','@yopmail.com','@tempmail','@test.com','@sample.com','@example'];
 
-const SUBPAGES = ['/contact','/about','/careers','/hr','/jobs','/contact-us','/about-us','/locations','/team','/offices','/our-team','/leadership','/management','/staff','/employees','/our-people','/people'];
+const SUBPAGES = [
+  '/contact','/about','/careers','/hr','/jobs','/contact-us','/about-us',
+  '/locations','/team','/offices','/our-team','/leadership','/management',
+  '/staff','/employees','/our-people','/people','/directory','/board',
+  '/management-team','/our-leadership','/executive-team','/company/team',
+  '/team-members','/our-company','/company','/who-we-are',
+  '/news','/press','/press-releases','/blog','/our-team-members',
+  '/board-of-directors','/executives','/leadership-team',
+  '/recruitment','/work-with-us','/join-us','/current-openings',
+  '/testimonials','/reviews','/partners','/clients',
+  '/our-clients','/our-partners','/investors','/governance',
+  '/about/team','/about/leadership','/about/management',
+  '/about/our-team','/about/company','/about/careers',
+  '/company/leadership','/company/management','/company/careers',
+  '/career','/opportunities','/openings','/vacancies',
+  '/founders','/our-founders','/advisors','/mentors',
+  '/ambassadors','/affiliates','/franchise','/dealers','/distributors',
+  '/suppliers','/vendors','/service-providers',
+  '/our-mission','/our-vision','/our-values',
+  '/corporate-governance','/code-of-conduct','/ethics',
+  '/diversity','/inclusion','/community',
+  '/sustainability','/esg','/corporate-responsibility',
+  '/events','/webinars','/conferences','/speakers',
+  '/case-studies','/success-stories','/portfolio',
+  '/projects','/work','/our-work',
+  '/foundation','/charity','/giving-back'
+];
 
-const SUBDOMAINS = ['jobs.','careers.','hr.','team.','about.','contact.','people.','staff.','employees.','leadership.'];
+const SUBDOMAINS = [
+  'jobs.','careers.','hr.','team.','about.','contact.','people.',
+  'staff.','employees.','leadership.','management.','board.',
+  'news.','press.','blog.','recruitment.','join.','career.',
+  'corp.','investors.','partners.','governance.','events.',
+  'community.','engagement.','learning.','academy.','training.',
+  'research.','innovation.','design.','creative.','brand.',
+  'procurement.','vendors.','suppliers.','logistics.',
+  'intranet.','portal.','my.','selfservice.','eservice.',
+  'directory.','staffdir.','peoplefinder.','whoswho.',
+  'executives.','exec.','leadership.','founders.',
+  'sustainability.','responsibility.','foundation.',
+  'franchise.','dealer.','partners.',
+  'legal.','compliance.','privacy.',
+  'investorrelations.','ir.'
+];
 
 const SOCIAL_PLATFORMS = {
   facebook: /(?:https?:)?\/\/(?:www\.)?(?:facebook|fb)\.com\/([^"'<>\s?/]+)/gi,
@@ -27,7 +86,28 @@ const SOCIAL_PLATFORMS = {
   snapchat: /(?:https?:)?\/\/(?:www\.)?snapchat\.com\/add\/([^"'<>\s?/]+)/gi,
   discord: /(?:https?:)?\/\/(?:www\.)?discord\.com\/(?:invite\/)?([^"'<>\s?/]+)/gi,
   telegram: /(?:https?:)?\/\/(?:t(?:elegram)?\.me)\/([^"'<>\s?/]+)/gi,
-  whatsapp: /(?:https?:)?\/\/(?:api\.)?whatsapp\.com\/(?:send\/?)?(?:\?phone=)?(\d+)/gi
+  whatsapp: /(?:https?:)?\/\/(?:api\.)?whatsapp\.com\/(?:send\/?)?(?:\?phone=)?(\d+)/gi,
+  medium: /(?:https?:)?\/\/(?:www\.)?medium\.com\/(@?[^"'<>\s?/]+)/gi,
+  github: /(?:https?:)?\/\/(?:www\.)?github\.com\/([^"'<>\s?/]+)/gi,
+  glassdoor: /(?:https?:)?\/\/(?:www\.)?glassdoor\.com\/(?:Overview\/)?([^"'<>\s?/]+)/gi,
+  crunchbase: /(?:https?:)?\/\/(?:www\.)?crunchbase\.com\/(?:organization|person|company)\/([^"'<>\s?/]+)/gi,
+  angellist: /(?:https?:)?\/\/(?:www\.)?angel\.co\/([^"'<>\s?/]+)/gi,
+  behance: /(?:https?:)?\/\/(?:www\.)?behance\.net\/([^"'<>\s?/]+)/gi,
+  dribbble: /(?:https?:)?\/\/(?:www\.)?dribbble\.com\/([^"'<>\s?/]+)/gi,
+  twitch: /(?:https?:)?\/\/(?:www\.)?twitch\.tv\/([^"'<>\s?/]+)/gi,
+  reddit: /(?:https?:)?\/\/(?:www\.)?reddit\.com\/(?:r\/)?([^"'<>\s?/]+)/gi,
+  yelp: /(?:https?:)?\/\/(?:www\.)?yelp\.[a-z.]+\/([^"'<>\s?/]+)/gi,
+  foursquare: /(?:https?:)?\/\/(?:www\.)?foursquare\.com\/([^"'<>\s?/]+)/gi,
+  tripadvisor: /(?:https?:)?\/\/(?:www\.)?tripadvisor\.[a-z.]+\/([^"'<>\s?/]+)/gi,
+  imdb: /(?:https?:)?\/\/(?:www\.)?imdb\.com\/(?:name|company|title)\/([^"'<>\s?/]+)/gi,
+  etsy: /(?:https?:)?\/\/(?:www\.)?etsy\.com\/(?:shop\/)?([^"'<>\s?/]+)/gi,
+  soundcloud: /(?:https?:)?\/\/(?:www\.)?soundcloud\.com\/([^"'<>\s?/]+)/gi,
+  spotify: /(?:https?:)?\/\/(?:open\.)?spotify\.com\/(?:artist|show|episode|playlist|user)\/([^"'<>\s?/]+)/gi,
+  vimeo: /(?:https?:)?\/\/(?:www\.)?vimeo\.com\/([^"'<>\s?/]+)/gi,
+  patreon: /(?:https?:)?\/\/(?:www\.)?patreon\.com\/([^"'<>\s?/]+)/gi,
+  producthunt: /(?:https?:)?\/\/(?:www\.)?producthunt\.com\/(?:@?[^"'<>\s?/]+)/gi,
+  trustpilot: /(?:https?:)?\/\/(?:www\.)?trustpilot\.com\/(?:review\/)?([^"'<>\s?/]+)/gi,
+  g2: /(?:https?:)?\/\/(?:www\.)?g2\.com\/(?:products|reviews)\/([^"'<>\s?/]+)/gi
 };
 
 const USER_AGENTS = [
@@ -150,32 +230,75 @@ function extractStructuredData(html) {
 
 function extractPeople(html) {
   const people = [];
+  const seenNames = new Set();
+  function addPerson(name, title='', source='') {
+    const n = name.trim();
+    if (!n || n.length < 2 || n.length > 60 || /^\d/.test(n) || n.includes('@') || n.includes('http') || n.includes('<') || n.includes('>')) return;
+    const key = n.toLowerCase();
+    if (seenNames.has(key)) return;
+    seenNames.add(key);
+    people.push({ name: n, title: title.trim(), _source: source });
+  }
   const patterns = [
-    /<h3[^>]*>([^<]+)<\/h3>\s*<p[^>]*>([^<]*)<\/p>/gi,
-    /<div[^>]*class="[^"]*(?:name|title)[^"]*"[^>]*>([^<]+)<\/div>\s*<div[^>]*class="[^"]*(?:role|position|job)[^"]*"[^>]*>([^<]*)<\/div>/gi,
-    /<span[^>]*class="[^"]*(?:name|member)[^"]*"[^>]*>([^<]+)<\/span>/gi,
-    /<li[^>]*class="[^"]*(?:team|member|staff|person)[^"]*"[^>]*>[\s\S]*?<h[234][^>]*>([^<]+)<\/h[234]>/gi,
-    /<div[^>]*class="[^"]*(?:team|member|staff|person)[^"]*"[^>]*>[\s\S]*?<h[234][^>]*>([^<]+)<\/h[234]>[\s\S]*?<(?:p|span|div)[^>]*class="[^"]*(?:role|position|job|title)[^"]*"[^>]*>([^<]*)<\//gi,
-    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s*[-–—|]\s*([A-Za-z\s]+)/g
+    /<h[234][^>]*>([^<]+)<\/h[234]>\s*<(?:p|span|div)[^>]*>([^<]*)<\/(?:p|span|div)>/gi,
+    /<div[^>]*class="[^"]*(?:name|full-name|member-name|person-name)[^"]*"[^>]*>([^<]+)<\/div>\s*<div[^>]*class="[^"]*(?:role|position|job|title|designation)[^"]*"[^>]*>([^<]*)<\/div>/gi,
+    /<span[^>]*class="[^"]*(?:name|member|person)[^"]*"[^>]*>([^<]+)<\/span>/gi,
+    /<li[^>]*class="[^"]*(?:team|member|staff|person|executive|leadership)[^"]*"[^>]*>[\s\S]*?<h[234][^>]*>([^<]+)<\/h[234]>/gi,
+    /<div[^>]*class="[^"]*(?:team|member|staff|person|card|executive|leadership)[^"]*"[^>]*>[\s\S]*?<h[234][^>]*>([^<]+)<\/h[234]>[\s\S]*?<(?:p|span|div)[^>]*class="[^"]*(?:role|position|job|title|designation)[^"]*"[^>]*>([^<]*)<\//gi,
+    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s*[-–—|]\s*([A-Za-z\s/]+)/g,
+    /<a[^>]*href="[^"]*mailto:([^"]+)"[^>]*>([^<]*)<\/a>/gi,
+    /<tr[^>]*>[\s\S]*?<td[^>]*class="[^"]*(?:name|person|member)[^"]*"[^>]*>([^<]+)<\/td>[\s\S]*?<td[^>]*class="[^"]*(?:role|title|position|department)[^"]*"[^>]*>([^<]*)<\/td>/gi,
+    /<div[^>]*class="[^"]*(?:team-member|member-card|person-card|employee-card|staff-card|profile-card|bio-card)[^"]*"[^>]*>[\s\S]*?<h[234][^>]*>([^<]+)<\/h[234]>/gi,
+    /<div[^>]*class="[^"]*(?:team-member|member-card|person-card|employee-card)[^"]*"[^>]*>[\s\S]*?<img[^>]*alt="([^"]+)"[^>]*>/gi,
+    /"name"\s*:\s*"([^"]+)"\s*,\s*"jobTitle"\s*:\s*"([^"]*)"/g,
+    /"name"\s*:\s*"([^"]+)"\s*,\s*"role"\s*:\s*"([^"]*)"/g,
+    /"fullName"\s*:\s*"([^"]+)"\s*,\s*"title"\s*:\s*"([^"]*)"/g,
+    /"employee"\s*:\s*\{\s*"name"\s*:\s*"([^"]+)"/g,
+    /"teamMember"\s*:\s*\{\s*"name"\s*:\s*"([^"]+)"/g,
+    /<meta[^>]+name="(?:author|creator)"[^>]+content="([^"]+)"/gi,
+    /<a[^>]*class="[^"]*(?:author|writer|contributor)[^"]*"[^>]*>([^<]+)<\/a>/gi,
+    /<div[^>]*class="[^"]*(?:author|byline)[^"]*"[^>]*>[\s]*by\s+([^<]+)<\/div>/gi
   ];
   for (const pat of patterns) {
     pat.lastIndex = 0;
     let m;
     while ((m = pat.exec(html)) !== null) {
-      const name = (m[1]||'').trim();
-      const title = (m[2]||'').trim();
-      if (name.length > 2 && name.length < 60 && !/^\d/.test(name) && !name.includes('@') && !name.includes('http')) {
-        if (!people.some(p => p.name === name)) people.push({ name, title, _source: 'html_pattern' });
-      }
+      if (m[2] !== undefined) addPerson(m[1], m[2], 'html_pattern');
+      else addPerson(m[1], '', 'html_pattern');
     }
   }
   const nameEmailPairs = extractEmails(html);
   for (const email of nameEmailPairs) {
     const local = email.split('@')[0];
     const nameGuess = local.replace(/[._-]/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g, c => c.toUpperCase()).trim();
-    if (!people.some(p => p.name === nameGuess)) people.push({ name: nameGuess, email, title: '', _source: 'email' });
+    if (!seenNames.has(nameGuess.toLowerCase())) {
+      addPerson(nameGuess, '', 'email');
+      if (people.length) people[people.length-1].email = email;
+    }
   }
+  const textNames = extractNamesFromText(html);
+  for (const n of textNames) addPerson(n.name, n.title, 'text');
   return people;
+}
+
+function extractNamesFromText(text) {
+  if (!text) return [];
+  const names = [];
+  const seen = new Set();
+  const namePattern = /(?:^|[.!?]\s+)([A-Z][a-z]{2,}(?:\s+[A-Z][a-z]{2,}){1,3})(?=[,.\s!?]|$)/g;
+  let m;
+  while ((m = namePattern.exec(text)) !== null) {
+    const name = m[1].trim();
+    if (name.split(' ').length >= 2 && name.length < 50) {
+      const first = name.split(' ')[0];
+      const skipWords = new Set(['About','Contact','Location','Address','Phone','Email','Hours','Home','Search','Menu','Team','Our','The','This','That','These','Those','Welcome','Please','Click','Read','More','Sign','Login','Register','Subscribe','Follow','Share','Join','Learn','Get','Find','View','Check','See','Call','Send','Visit','Book','Order','Buy','Shop','Download','Upload','Support','Help','FAQ','Terms','Privacy','Policy','Careers','Jobs','News','Blog','Press','Events','Partners','Clients','Projects','Services','Products','Solutions','Resources','Contact','About','Copyright','All','Rights','Reserved','Powered','Designed','Developed','Created','Managed','Terms','Conditions','Cookie','Policy','Your','Shopping','Cart','Wishlist','Account','Checkout','Warranty','Returns','Shipping','Delivery','Payment','Security','Sitemap','Accessibility']);
+      if (!skipWords.has(first)) {
+        const key = name.toLowerCase();
+        if (!seen.has(key)) { seen.add(key); names.push({ name, title: '', _source: 'text' }); }
+      }
+    }
+  }
+  return names;
 }
 
 function extractMeta(html, names) {
@@ -194,8 +317,8 @@ function extractSection(html, keywords, maxLen=200) {
   if (!html) return '';
   for (const kw of keywords) {
     for (const p of [
-      new RegExp(`${kw}\\s*[:\\-–]?\\s*([^<.]+?(?:\\.(?:\\s|\$|\$))`,'gi'),
-      new RegExp(`${kw}[\\s\\S]{0,5}?<[^>]+>([^<]+)</`,'gi')
+      new RegExp(`${kw}\\s*[:\\-–]?\\s*([^<.]+?(?:\\.(?:\\s|\$))+)`,'gi'),
+      new RegExp(`${kw}[\\s\\S]{0,20}?<[^>]+>([^<]+)</`,'gi')
     ]) { const m = p.exec(html); if (m) { const v = m[1].trim(); if (v.length>3 && v.length<maxLen) return v; } }
   }
   return '';
@@ -216,7 +339,15 @@ function extractTitle(html) {
 
 function extractPaymentMethods(html) {
   if (!html) return [];
-  const kws = ['visa','mastercard','amex','paypal','apple pay','google pay','stripe','discover','bitcoin','venmo','zelle','afterpay','klarna','affirm','sepa','wire transfer','crypto'];
+  const kws = [
+    'visa','mastercard','amex','american express','paypal','apple pay','google pay','stripe',
+    'discover','bitcoin','ethereum','crypto','venmo','zelle','afterpay','klarna','affirm',
+    'sepa','wire transfer','bank transfer','direct deposit','ach','cash','cheque','check',
+    'diners','jcb','union pay','alipay','wechat pay','ideal','bancontact','giropay',
+    'sofort','eps','multibanco','boleto','pix','mercado pago','payoneer','skrill',
+    'neteller','webmoney','yandex money','qiwi','paytm','amazon pay','shopify payments',
+    'square','goCardless','recurly','chargebee','paddle','lemonsqueezy','gumroad'
+  ];
   const lower = html.toLowerCase();
   return [...new Set(kws.filter(k => lower.includes(k)))];
 }
@@ -224,14 +355,31 @@ function extractPaymentMethods(html) {
 function extractSize(html, enriched) {
   const lower = (html||'').toLowerCase();
   const clues = [];
-  if (/\b\d{3,4}\s*employees?\b/i.test(lower)) clues.push(lower.match(/\b(\d{3,4})\s*employees?/i)[0]);
-  if (/\b(?:small|medium|large)\s*(?:business|company|enterprise)\b/i.test(lower)) clues.push(lower.match(/\b(small|medium|large)\s*(?:business|company|enterprise)\b/i)[0].toLowerCase());
+  const empCount = lower.match(/\b(\d{1,2}[,.]?\d{2,4})\s*employees?\b/i);
+  if (empCount) clues.push(empCount[0]);
+  if (/\b(?:small|medium|large)\s*(?:business|company|enterprise)\b/i.test(lower)) {
+    const m = lower.match(/\b(small|medium|large)\s*(?:business|company|enterprise)\b/i);
+    if (m) clues.push(m[0].toLowerCase());
+  }
   if (enriched.capacity) clues.push(`capacity: ${enriched.capacity}`);
   if (/\bstartup\b/i.test(lower)) clues.push('startup');
   if (/\benterprise\b/i.test(lower)) clues.push('enterprise');
   if (/\bfortune\s*500\b/i.test(lower)) clues.push('fortune 500');
   if (/\bmultinational\b/i.test(lower)) clues.push('multinational');
-  return clues.length ? clues.join(', ') : '';
+  if (/\bsmall business\b/i.test(lower)) clues.push('small business');
+  if (/\bfamily.?owned\b/i.test(lower)) clues.push('family-owned');
+  if (/\blocal business\b/i.test(lower)) clues.push('local business');
+  if (/\bindependent\b.*\bbusiness\b/i.test(lower)) clues.push('independent');
+  if (/\bglobal\b.*\bcompany\b/i.test(lower)) clues.push('global company');
+  if (/\bpublicly traded\b|\bNYSE\b|\bNASDAQ\b|\bstock exchange\b/i.test(lower)) clues.push('publicly traded');
+  if (/\bb2b\b|\bwholesale\b/i.test(lower)) clues.push('b2b/wholesale');
+  if (/\bfranchise\b/i.test(lower) || enriched.type === 'franchise') clues.push('franchise');
+  if (/\bnon.?profit\b|\bnonprofit\b|\bcharity\b|\bfoundation\b/i.test(lower)) clues.push('non-profit');
+  if (/\bgovernment\b|\bmunicipal\b|\bfederal\b|\bstate.?owned\b/i.test(lower)) clues.push('government');
+  const empRange = lower.match(/\b(\d+)[\s-]*(?:to|[-–])[\s-]*(\d+)\s*employees?\b/i);
+  if (empRange) clues.push(`${empRange[1]}-${empRange[2]} employees`);
+  if (enriched.employees?.length && !clues.some(c => c.includes('employee'))) clues.push(`${enriched.employees.length}+ team members`);
+  return clues.length ? [...new Set(clues)].join(', ') : '';
 }
 
 function computeCompleteness(enriched) {
@@ -292,10 +440,23 @@ export async function enrichBusiness(business) {
 
   if (foundDomain) {
     htmls.push(...await throttledFetch(SUBPAGES.map(p => `https://${foundDomain}${p}`), 8, 2000));
+    htmls.push(...await throttledFetch(SUBPAGES.map(p => `https://www.${foundDomain}${p}`), 8, 2000));
     htmls.push(...await throttledFetch(SUBDOMAINS.map(s => `https://${s}${foundDomain}`), 6, 2000));
-    if (!htmls.length) {
-      const wmHtml = await fetchUrl(`https://web.archive.org/web/2024/${foundDomain}/`, 4000);
-      if (wmHtml) htmls.push(wmHtml);
+    htmls.push(...await throttledFetch(SUBDOMAINS.map(s => `https://${s}www.${foundDomain}`), 6, 2000));
+    const morePages = ['/index','/home','/default','/main','/en','/en-us','/id','/id-id','/en-gb','/fr','/de','/es','/it','/pt','/nl','/ru','/ja','/ko','/zh','/ar','/hi'];
+    htmls.push(...await throttledFetch(morePages.map(p => `https://${foundDomain}${p}`), 6, 1500));
+    const wmCurrent = await fetchUrl(`https://web.archive.org/web/2026/${foundDomain}/`, 3000);
+    if (wmCurrent) htmls.push(wmCurrent);
+    if (!htmls.length || !htmls.some(h => h.length > 500)) {
+      const wmOld = await fetchUrl(`https://web.archive.org/web/2024/${foundDomain}/`, 3000);
+      if (wmOld) htmls.push(wmOld);
+    }
+    const wmSubpages = await Promise.allSettled(SUBPAGES.slice(0,15).map(p => fetchUrl(`https://web.archive.org/web/2025/${foundDomain}${p}`, 2000)));
+    htmls.push(...wmSubpages.filter(x => x.status==='fulfilled' && x.value).map(x => x.value));
+    const sitemapHtml = await fetchUrl(`https://${foundDomain}/sitemap.xml`, 2000);
+    if (sitemapHtml) {
+      const urls = [...sitemapHtml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]).filter(u => !u.includes('.pdf') && !u.includes('.jpg') && !u.includes('.png')).slice(0,30);
+      if (urls.length) htmls.push(...await throttledFetch(urls, 5, 2000));
     }
   }
 
@@ -374,26 +535,51 @@ export async function enrichBusiness(business) {
   const socialSide = extractSocialLinks(side);
   enriched.social_all = { ...social };
   for (const k of Object.keys(socialSide)) { if (socialSide[k]) enriched.social_all[k] = socialSide[k]; }
-  if (!enriched.facebook) enriched.facebook = social.facebook || socialSide.facebook;
-  if (!enriched.instagram) enriched.instagram = social.instagram || socialSide.instagram;
-  if (!enriched.twitter) enriched.twitter = social.twitter || socialSide.twitter;
-  if (!enriched.linkedin) enriched.linkedin = social.linkedin || socialSide.linkedin || enriched.linkedin || '';
-  if (!enriched.youtube) enriched.youtube = social.youtube || socialSide.youtube || '';
-  if (!enriched.tiktok) enriched.tiktok = social.tiktok || socialSide.tiktok || '';
-  if (!enriched.pinterest) enriched.pinterest = social.pinterest || socialSide.pinterest || '';
-  if (!enriched.snapchat) enriched.snapchat = social.snapchat || socialSide.snapchat || '';
-  if (!enriched.discord) enriched.discord = social.discord || socialSide.discord || '';
-  if (!enriched.telegram) enriched.telegram = social.telegram || socialSide.telegram || '';
-  if (!enriched.whatsapp) enriched.whatsapp = social.whatsapp || socialSide.whatsapp || '';
+  const allSocialKeys = Object.keys(SOCIAL_PLATFORMS);
+  for (const k of allSocialKeys) {
+    if (!enriched[k]) enriched[k] = social[k] || socialSide[k] || '';
+  }
 
   if (structured.sameAs?.length) {
+    const socialDomainMap = {
+      'facebook.com': 'facebook', 'fb.com': 'facebook',
+      'instagram.com': 'instagram',
+      'twitter.com': 'twitter', 'x.com': 'twitter',
+      'linkedin.com': 'linkedin',
+      'youtube.com': 'youtube', 'youtu.be': 'youtube',
+      'tiktok.com': 'tiktok',
+      'pinterest': 'pinterest',
+      'snapchat.com': 'snapchat',
+      'discord.com': 'discord',
+      't.me': 'telegram', 'telegram.me': 'telegram',
+      'whatsapp.com': 'whatsapp',
+      'medium.com': 'medium',
+      'github.com': 'github',
+      'glassdoor.com': 'glassdoor',
+      'crunchbase.com': 'crunchbase',
+      'angel.co': 'angellist',
+      'behance.net': 'behance',
+      'dribbble.com': 'dribbble',
+      'twitch.tv': 'twitch',
+      'reddit.com': 'reddit',
+      'yelp': 'yelp',
+      'foursquare.com': 'foursquare',
+      'tripadvisor': 'tripadvisor',
+      'imdb.com': 'imdb',
+      'etsy.com': 'etsy',
+      'soundcloud.com': 'soundcloud',
+      'spotify.com': 'spotify',
+      'vimeo.com': 'vimeo',
+      'patreon.com': 'patreon',
+      'producthunt.com': 'producthunt',
+      'trustpilot.com': 'trustpilot',
+      'g2.com': 'g2'
+    };
     for (const url of structured.sameAs) {
       const l = url.toLowerCase();
-      if (!enriched.facebook && l.includes('facebook.com')) enriched.facebook = url;
-      if (!enriched.instagram && l.includes('instagram.com')) enriched.instagram = url;
-      if (!enriched.twitter && (l.includes('twitter.com')||l.includes('x.com'))) enriched.twitter = url;
-      if (!enriched.linkedin && l.includes('linkedin.com')) enriched.linkedin = url;
-      if (!enriched.youtube && l.includes('youtube.com')) enriched.youtube = url;
+      for (const [domain, key] of Object.entries(socialDomainMap)) {
+        if (!enriched[key] && l.includes(domain)) { enriched[key] = url; break; }
+      }
     }
   }
 
