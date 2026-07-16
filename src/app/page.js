@@ -222,7 +222,10 @@ export default function Home() {
             return m;
           });
           setBusinesses(merged);
-        } catch (err) { console.error('Auto-enrichment error:', err); }
+        } catch (err) {
+          console.error('Auto-enrichment error:', err);
+          setError('Enrichment partially failed — some results may have incomplete data. Try clicking Enrich again.');
+        }
         setEnriching(false);
         setEnrichProgress({ current: 0, total: 0 });
       }
@@ -314,7 +317,12 @@ export default function Home() {
         return m;
       });
       setBusinesses(merged);
-    } catch (err) { if (!enrichAbortRef.current) console.error('Enrichment error:', err); }
+    } catch (err) {
+      if (!enrichAbortRef.current) {
+        console.error('Enrichment error:', err);
+        setError('Enrichment failed. The target websites may be blocking requests. Data enrichment was skipped.');
+      }
+    }
     setEnriching(false); setEnrichProgress({ current: 0, total: 0 });
   }, [businesses]);
 
