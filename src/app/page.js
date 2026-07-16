@@ -138,6 +138,59 @@ function getDescription(tags) {
 
 function cleanPhone(p) { return p ? p.replace(/[^\d+]/g, '') : ''; }
 
+function BrutalCard({ children, className = '', style = {} }) {
+  return (
+    <div className={className} style={{ background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '5px 5px 0px var(--border)', ...style }}>
+      {children}
+    </div>
+  );
+}
+
+function BrutalBtn({ children, color, onClick, disabled, small, className = '', style = {} }) {
+  const bg = color || 'var(--accent)';
+  return (
+    <button onClick={onClick} disabled={disabled}
+      className={className}
+      style={{
+        background: disabled ? 'var(--surface2)' : bg,
+        color: disabled ? 'var(--muted)' : '#fff',
+        border: `3px solid var(--border)`,
+        boxShadow: disabled ? 'none' : '3px 3px 0px var(--border)',
+        fontWeight: 700,
+        fontSize: small ? '11px' : '13px',
+        padding: small ? '6px 14px' : '10px 24px',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transition: 'all 0.05s linear',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        ...style
+      }}
+      onMouseDown={e => { if (!disabled) { e.currentTarget.style.transform = 'translate(2px,2px)'; e.currentTarget.style.boxShadow = '1px 1px 0px var(--border)'; }}}
+      onMouseUp={e => { if (!disabled) { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '3px 3px 0px var(--border)'; }}}
+      onMouseLeave={e => { if (!disabled) { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '3px 3px 0px var(--border)'; }}}
+    >
+      {children}
+    </button>
+  );
+}
+
+function BrutalBadge({ children, bg, fg }) {
+  return (
+    <span style={{
+      display: 'inline-block',
+      background: bg || 'var(--surface2)',
+      color: fg || 'var(--fg)',
+      border: '2px solid var(--border)',
+      fontWeight: 700,
+      fontSize: '10px',
+      padding: '2px 8px',
+      textTransform: 'uppercase'
+    }}>
+      {children}
+    </span>
+  );
+}
+
 export default function Home() {
   const [place, setPlace] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -155,7 +208,6 @@ export default function Home() {
   const [enrichProgress, setEnrichProgress] = useState({ current: 0, total: 0 });
   const [enrichEnabled, setEnrichEnabled] = useState(true);
   const [theme, setThemeState] = useState('dark');
-  const [showPatterns, setShowPatterns] = useState({});
   const enrichAbortRef = useRef(false);
   const inputRef = useRef();
   const suggestionsRef = useRef();
@@ -374,81 +426,80 @@ export default function Home() {
     :
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>;
 
+  const S = {
+    section: { background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '5px 5px 0px var(--border)', padding: '20px', marginBottom: '20px' },
+    label: { fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--muted)', marginBottom: '8px' },
+    input: { background: 'var(--bg)', color: 'var(--fg)', border: '3px solid var(--border)', padding: '12px 16px', fontSize: '14px', fontWeight: 600, outline: 'none', width: '100%' },
+    muted: { color: 'var(--muted)', fontSize: '12px' },
+  };
+
+  const TH_STYLE = { padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', background: 'var(--surface2)', color: 'var(--fg)', borderBottom: '3px solid var(--border)' };
+  const TD_STYLE = { padding: '12px 16px', fontSize: '13px', borderBottom: '2px solid var(--border)' };
+
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
-      <div className="max-w-7xl mx-auto p-4 md:p-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg" style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>A</div>
+    <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 16px' }}>
+
+        {/* HEADER */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '44px', height: '44px', background: 'var(--accent)', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '20px' }}>A</div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Advanced Business Finder</h1>
-              <p className="text-xs" style={{ color: 'var(--muted)' }}>Powered by OpenStreetMap</p>
+              <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--fg)', margin: 0, textTransform: 'uppercase', letterSpacing: '-0.5px' }}>AppKind</h1>
+              <p style={{ ...S.muted, margin: 0 }}>Business Finder · OpenStreetMap</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 mt-3 md:mt-0">
-            <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>v2.0</span>
-            <button onClick={toggleTheme} className="p-2 rounded-lg transition-all hover:scale-110" style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }} title="Toggle theme">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <BrutalBadge>v3.0</BrutalBadge>
+            <button onClick={toggleTheme} style={{ width: '40px', height: '40px', background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', color: 'var(--fg)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <ThemeIcon />
             </button>
           </div>
         </div>
 
-        {/* Search Section */}
-        <div className="rounded-xl shadow-lg mb-6 p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="flex-1 relative">
-              <input ref={inputRef} type="text" value={place} onChange={handleInputChange} onKeyDown={handleKeyDown} placeholder="Enter a city, address, or location"
-                className="p-3 rounded-lg w-full outline-none transition-all text-sm"
-                style={{ background: 'var(--background)', color: 'var(--foreground)', border: '1px solid var(--border)' }}
-                autoComplete="off" />
+        {/* SEARCH */}
+        <div style={S.section}>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, position: 'relative', minWidth: '200px' }}>
+              <input ref={inputRef} type="text" value={place} onChange={handleInputChange} onKeyDown={handleKeyDown} placeholder="Enter city, address, or location..."
+                style={S.input} autoComplete="off" />
               {enriching && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg className="animate-spin h-4 w-4" style={{ color: 'var(--primary)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)' }}>
+                  <svg className="animate-spin" style={{ width: '18px', height: '18px', color: 'var(--accent)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
                 </div>
               )}
               {suggestions.length > 0 && (
-                <ul ref={suggestionsRef} className="absolute z-10 w-full mt-1 rounded-lg shadow-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <ul ref={suggestionsRef} style={{ position: 'absolute', zIndex: 10, width: '100%', marginTop: '4px', background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '5px 5px 0px var(--border)', listStyle: 'none', padding: 0 }}>
                   {suggestions.map((s, idx) => (
-                    <li key={idx} className="px-4 py-2.5 cursor-pointer border-b text-sm transition-colors" style={{ borderColor: 'var(--border)' }}
+                    <li key={idx} style={{ padding: '10px 14px', cursor: 'pointer', borderBottom: idx < suggestions.length - 1 ? '2px solid var(--border)' : 'none' }}
                       onClick={() => handleSuggestionClick(s)}
-                      onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-alt)'}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                      <div className="font-medium" style={{ color: 'var(--foreground)' }}>{s.display_name.split(',')[0]}</div>
-                      <div className="text-xs" style={{ color: 'var(--muted)' }}>{s.display_name.split(',').slice(1).join(',')}</div>
+                      <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--fg)' }}>{s.display_name.split(',')[0]}</div>
+                      <div style={{ ...S.muted }}>{s.display_name.split(',').slice(1).join(',')}</div>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
-            <button onClick={() => searchBusinesses()} disabled={loading || !place.trim()}
-              className="px-6 py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm"
-              style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Searching...
-                </span>
-              ) : businesses.length > 0 ? 'Search Again' : 'Find Businesses'}
-            </button>
+            <BrutalBtn onClick={() => searchBusinesses()} disabled={loading || !place.trim()} color="var(--accent)">
+              {loading ? 'SEARCHING...' : businesses.length > 0 ? 'SEARCH AGAIN' : 'FIND BUSINESSES'}
+            </BrutalBtn>
           </div>
 
           {searchHistory.length > 0 && (
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium" style={{ color: 'var(--muted)' }}>Recent Searches:</label>
-                <button onClick={clearHistory} className="text-xs hover:underline" style={{ color: '#ef4444' }}>Clear</button>
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ ...S.label }}>Recent</span>
+                <button onClick={clearHistory} style={{ ...S.muted, textDecoration: 'underline', fontWeight: 700, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>CLEAR</button>
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {searchHistory.map((h, idx) => (
                   <button key={idx} onClick={() => { setPlace(h); searchBusinesses(h); }}
-                    className="px-2.5 py-1 text-xs rounded-lg transition-colors" style={{ background: 'var(--surface-alt)', color: 'var(--muted)' }}>
+                    style={{ padding: '4px 12px', fontSize: '11px', fontWeight: 700, background: 'var(--surface)', border: '2px solid var(--border)', color: 'var(--fg)', cursor: 'pointer' }}>
                     {h.length > 40 ? h.slice(0, 40) + '...' : h}
                   </button>
                 ))}
@@ -456,341 +507,325 @@ export default function Home() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginBottom: '16px' }}>
             <div>
-              <label className="block text-xs font-medium mb-2" style={{ color: 'var(--muted)' }}>Search Radius: <span className="font-bold" style={{ color: 'var(--primary)' }}>{searchRadius} km</span></label>
+              <div style={S.label}>Radius: <span style={{ color: 'var(--accent)' }}>{searchRadius} km</span></div>
               <input type="range" min="1" max="20" value={searchRadius} onChange={(e) => setSearchRadius(parseInt(e.target.value))}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: 'var(--primary)', background: 'var(--surface-alt)' }} />
-              <div className="flex justify-between text-xs mt-1" style={{ color: 'var(--muted)' }}><span>1 km</span><span>20 km</span></div>
+                style={{ width: '100%', accentColor: 'var(--accent)', height: '8px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', ...S.muted, marginTop: '4px' }}><span>1 km</span><span>20 km</span></div>
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-xs font-medium mb-2" style={{ color: 'var(--muted)' }}>Business Categories:</label>
-              <div className="flex flex-wrap gap-1.5">
+            <div>
+              <div style={S.label}>Categories</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {businessCategories.map(cat => (
                   <button key={cat} onClick={() => toggleCategory(cat)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${selectedCategories.includes(cat) ? 'text-white' : ''}`}
-                    style={selectedCategories.includes(cat) ? { background: 'linear-gradient(135deg, var(--primary), var(--secondary))', color: 'white' } : { background: 'var(--surface-alt)', color: 'var(--muted)' }}>
-                    {cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, ' ')}
+                    style={{
+                      padding: '4px 12px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
+                      background: selectedCategories.includes(cat) ? 'var(--accent)' : 'var(--surface)',
+                      color: selectedCategories.includes(cat) ? '#fff' : 'var(--fg)',
+                      border: '2px solid var(--border)',
+                      cursor: 'pointer'
+                    }}>
+                    {cat.replace(/_/g, ' ')}
                   </button>
                 ))}
               </div>
-              <p className="text-xs mt-2" style={{ color: 'var(--muted)' }}>
-                {selectedCategories.length > 0 ? `Showing only: ${selectedCategories.join(', ')}` : 'Showing all business types'}
-                {selectedCategories.length > 0 && <button onClick={() => setSelectedCategories([])} className="ml-2 hover:underline" style={{ color: 'var(--primary)' }}>Clear all</button>}
-              </p>
+              <div style={{ ...S.muted, marginTop: '6px' }}>
+                {selectedCategories.length > 0 ? `Showing: ${selectedCategories.join(', ')}` : 'All types'}
+                {selectedCategories.length > 0 && <button onClick={() => setSelectedCategories([])} style={{ marginLeft: '8px', fontWeight: 700, textDecoration: 'underline', background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '11px' }}>CLEAR</button>}
+              </div>
             </div>
           </div>
 
-          <div className="pt-4 flex items-center gap-4" style={{ borderTop: '1px solid var(--border)' }}>
-            <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: 'var(--muted)' }}>
+          <div style={{ paddingTop: '16px', borderTop: '3px solid var(--border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', ...S.muted, cursor: 'pointer', fontWeight: 700 }}>
               <input type="checkbox" checked={enrichEnabled} onChange={(e) => setEnrichEnabled(e.target.checked)}
-                className="rounded" style={{ accentColor: 'var(--primary)' }} />
-              Auto-enrich (find emails, phones, HR contacts from websites)
+                style={{ width: '16px', height: '16px', accentColor: 'var(--accent)' }} />
+              AUTO-ENRICH
             </label>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${enrichEnabled ? 'text-green-500' : 'text-red-400'}`} style={{ background: 'var(--surface-alt)' }}>{enrichEnabled ? 'Enabled' : 'Disabled'}</span>
+            <span style={{ padding: '2px 10px', fontSize: '10px', fontWeight: 700, border: '2px solid var(--border)', background: enrichEnabled ? 'rgba(16,185,129,0.15)' : 'var(--surface2)', color: enrichEnabled ? '#10b981' : 'var(--muted)' }}>
+              {enrichEnabled ? 'ON' : 'OFF'}
+            </span>
           </div>
         </div>
 
-        {/* Error */}
+        {/* ERROR */}
         {error && (
-          <div className="rounded-xl px-4 py-3 mb-6 flex items-start justify-between" style={{ background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)', color: '#eab308' }}>
-            <span className="text-sm">{error}</span>
-            <button onClick={() => setError('')} className="ml-4 font-bold opacity-70 hover:opacity-100">&times;</button>
+          <div style={{ ...S.section, background: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#d97706' }}>{error}</span>
+            <button onClick={() => setError('')} style={{ fontWeight: 900, fontSize: '18px', background: 'none', border: 'none', color: '#d97706', cursor: 'pointer', padding: '0 0 0 12px' }}>&times;</button>
           </div>
         )}
 
-        {/* Results */}
+        {/* RESULTS */}
         {businesses.length > 0 && (
-          <div className="rounded-xl shadow-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <div style={{ borderBottom: '1px solid var(--border)' }}>
-              <nav className="flex flex-wrap -mb-px">
-                <button onClick={() => setActiveTab('map')}
-                  className={`py-3.5 px-6 text-center border-b-2 font-medium text-sm transition-colors ${activeTab === 'map' ? '' : 'border-transparent'}`}
-                  style={activeTab === 'map' ? { borderColor: 'var(--primary)', color: 'var(--primary)' } : { color: 'var(--muted)' }}>
-                  Map View
+          <div style={S.section}>
+            {/* TABS */}
+            <div style={{ display: 'flex', borderBottom: '3px solid var(--border)', marginBottom: '16px', flexWrap: 'wrap', gap: '4px' }}>
+              {['map', 'table'].map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  style={{
+                    padding: '10px 20px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase',
+                    background: activeTab === tab ? 'var(--fg)' : 'var(--surface)',
+                    color: activeTab === tab ? 'var(--bg)' : 'var(--fg)',
+                    border: '3px solid var(--border)',
+                    borderBottom: activeTab === tab ? '3px solid var(--fg)' : '3px solid var(--border)',
+                    marginBottom: '-3px',
+                    cursor: 'pointer'
+                  }}>
+                  {tab === 'map' ? 'Map View' : `Table (${filteredBusinesses.length}/${businesses.length})`}
                 </button>
-                <button onClick={() => setActiveTab('table')}
-                  className={`py-3.5 px-6 text-center border-b-2 font-medium text-sm transition-colors ${activeTab === 'table' ? '' : 'border-transparent'}`}
-                  style={activeTab === 'table' ? { borderColor: 'var(--primary)', color: 'var(--primary)' } : { color: 'var(--muted)' }}>
-                  Table View ({filteredBusinesses.length} of {businesses.length})
-                </button>
-                <div className="ml-auto flex items-center gap-1.5 px-3 flex-wrap py-2">
-                  {enriching && (
-                    <span className="text-xs mr-1" style={{ color: 'var(--primary)' }}>
-                      Enriching {enrichProgress.current}/{enrichProgress.total}...
-                    </span>
-                  )}
-                  <button onClick={() => { enrichAbortRef.current = true; setEnriching(false); setEnrichProgress({ current: 0, total: 0 }); }}
-                    disabled={!enriching}
-                    className={`px-2 py-1.5 text-xs rounded-lg transition-colors ${enriching ? 'text-white' : 'opacity-30 cursor-not-allowed'}`}
-                    style={enriching ? { background: '#d97706' } : { background: 'var(--surface-alt)' }}>
-                    Stop
-                  </button>
-                  <button onClick={enrichCurrentResults} disabled={enriching || !businesses.length}
-                    className={`px-2 py-1.5 text-xs rounded-lg font-medium transition-all ${!enriching && businesses.length ? 'text-white' : 'opacity-30 cursor-not-allowed'}`}
-                    style={!enriching && businesses.length ? { background: 'linear-gradient(135deg, var(--primary), var(--secondary))' } : { background: 'var(--surface-alt)' }}>
-                    Enrich
-                  </button>
-                  <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Filter..."
-                    className="px-2.5 py-1.5 text-xs rounded-lg outline-none w-28"
-                    style={{ background: 'var(--background)', color: 'var(--foreground)', border: '1px solid var(--border)' }} />
-                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                    className="px-2 py-1.5 text-xs rounded-lg outline-none"
-                    style={{ background: 'var(--background)', color: 'var(--foreground)', border: '1px solid var(--border)' }}>
-                    <option value="name-asc">Name A-Z</option>
-                    <option value="name-desc">Name Z-A</option>
-                    <option value="type">Type</option>
-                    <option value="category">Category</option>
-                  </select>
-                  <button onClick={downloadCSV} className="flex items-center px-2.5 py-1.5 text-xs rounded-lg font-medium text-white"
-                    style={{ background: '#059669' }} title="CSV">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                    CSV
-                  </button>
-                  <button onClick={downloadJSON} className="flex items-center px-2.5 py-1.5 text-xs rounded-lg font-medium text-white"
-                    style={{ background: '#7c3aed' }} title="JSON">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                    JSON
-                  </button>
-                  <button onClick={clearResults}
-                    className="flex items-center px-2 py-1.5 text-xs rounded-lg text-white" style={{ background: '#dc2626' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                  </button>
-                </div>
-              </nav>
+              ))}
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', padding: '4px 0' }}>
+                {enriching && <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent)' }}>ENRICHING {enrichProgress.current}/{enrichProgress.total}...</span>}
+                <BrutalBtn small onClick={() => { enrichAbortRef.current = true; setEnriching(false); setEnrichProgress({ current: 0, total: 0 }); }} disabled={!enriching} color="#d97706">STOP</BrutalBtn>
+                <BrutalBtn small onClick={enrichCurrentResults} disabled={enriching || !businesses.length} color="var(--accent)">ENRICH</BrutalBtn>
+                <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="FILTER..."
+                  style={{ ...S.input, padding: '6px 10px', fontSize: '11px', width: '100px' }} />
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
+                  style={{ ...S.input, padding: '6px 10px', fontSize: '11px', width: '110px', cursor: 'pointer' }}>
+                  <option value="name-asc">Name A-Z</option>
+                  <option value="name-desc">Name Z-A</option>
+                  <option value="type">Type</option>
+                  <option value="category">Category</option>
+                </select>
+                <BrutalBtn small onClick={downloadCSV} color="#059669">CSV</BrutalBtn>
+                <BrutalBtn small onClick={downloadJSON} color="#7c3aed">JSON</BrutalBtn>
+                <button onClick={clearResults} style={{ width: '36px', height: '36px', background: '#dc2626', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 900, fontSize: '16px' }}>&times;</button>
+              </div>
             </div>
 
-            <div className="p-4">
-              {activeTab === 'map' && (
-                <div className="space-y-6">
-                  <div style={{ height: '500px', border: '1px solid var(--border)' }} className="rounded-lg overflow-hidden">
-                    <MapContainer center={center} zoom={13} style={{ height: "100%", width: "100%" }}>
-                      <TileLayer attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      {filteredBusinesses.map((b, idx) => (
-                        <Marker key={b.id || idx} position={[b.lat, b.lon]}>
-                          <Popup>
-                            <div className="space-y-1 text-sm max-w-xs">
-                              <h3 className="font-bold text-base">{b.name}</h3>
-                              {b.type && b.type !== 'Type not specified' && <p><span className="font-medium">Type:</span> {b.type}</p>}
-                              {b.category && b.category !== 'Category not specified' && <p><span className="font-medium">Category:</span> {b.category}</p>}
-                              {b.phone && b.phone !== 'Phone not listed' && <p><span className="font-medium">Phone:</span> {b.phone}</p>}
-                              {b.email && b.email !== 'Email not available' && <p><span className="font-medium">Email:</span> {b.email}</p>}
-                              {b.hr_email && <p><span style={{ color: '#ef4444' }}><span className="font-medium">HR:</span> {b.hr_email}</span></p>}
-                              {b.address && b.address !== 'Address not available' && <p><span className="font-medium">Address:</span> {b.address}</p>}
-                              {b.website && b.website !== 'Website not available' && <p><span className="font-medium">Website:</span> <a href={b.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>Open</a></p>}
-                              {b.opening_hours && b.opening_hours !== 'Hours not available' && <p><span className="font-medium">Hours:</span> <span className="text-xs">{b.opening_hours}</span></p>}
-                              {b.description && b.description !== 'No description available' && <p className="text-xs" style={{ color: 'var(--muted)' }}>{b.description}</p>}
-                              <a href={b.google_maps_url} target="_blank" rel="noopener noreferrer" className="inline-block mt-1 text-xs" style={{ color: 'var(--primary)' }}>View on Google Maps &rarr;</a>
-                            </div>
-                          </Popup>
-                        </Marker>
-                      ))}
-                    </MapContainer>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* MAP VIEW */}
+            {activeTab === 'map' && (
+              <div>
+                <div style={{ height: '450px', border: '3px solid var(--border)', marginBottom: '20px' }}>
+                  <MapContainer center={center} zoom={13} style={{ height: "100%", width: "100%" }}>
+                    <TileLayer attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     {filteredBusinesses.map((b, idx) => (
-                      <div key={b.id || idx} className="rounded-xl overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02]" style={{ background: 'var(--background)', border: '1px solid var(--border)' }}>
-                        <div className="h-36" style={{ background: 'var(--surface-alt)' }}>
-                          <iframe src={b.google_maps_embed} width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" title={`Map of ${b.name}`}></iframe>
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-bold text-sm" style={{ color: 'var(--foreground)' }}>
-                            {b.name}
-                            {b._enriched && <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.2)', color: 'var(--primary-light)' }}>ENR</span>}
-                            {b.hr_email && <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>HR</span>}
-                            {b._data_score !== undefined && (
-                              <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: b._data_score >= 70 ? 'rgba(34,197,94,0.2)' : b._data_score >= 40 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: b._data_score >= 70 ? '#22c55e' : b._data_score >= 40 ? '#eab308' : '#ef4444' }}>{b._data_score}%</span>
-                            )}
-                            {b._has_employees && <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.15)', color: 'var(--primary-light)' }}>👥{b.employees?.length}</span>}
-                          </h3>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>{b.type} {b.category && `\u2022 ${b.category}`}</p>
-                          {b.address && b.address !== 'Address not available' && <p className="text-xs mt-1.5" style={{ color: 'var(--muted)' }}>{b.address}</p>}
-                          {b.phone && b.phone !== 'Phone not listed' && <p className="text-xs mt-1" style={{ color: 'var(--foreground)' }}>{b.phone}</p>}
-                          {b.email && b.email !== 'Email not available' && <p className="text-xs mt-1" style={{ color: 'var(--primary-light)' }}>{b.email}</p>}
-                          {b.hr_email && <p className="text-xs mt-1"><span style={{ color: '#ef4444' }}>HR: {b.hr_email}</span></p>}
-                          {b.website && b.website !== 'Website not available' && (
-                            <p className="text-xs mt-1"><a href={b.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>Website</a></p>
-                          )}
-                          {b.linkedin && <p className="text-xs mt-1"><a href={`https://${b.linkedin}`} target="_blank" rel="noopener noreferrer" style={{ color: '#0a66c2' }}>LinkedIn</a></p>}
-                          {b.opening_hours && b.opening_hours !== 'Hours not available' && <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{b.opening_hours}</p>}
-                          {b.cuisine && <p className="text-[10px] mt-1" style={{ color: 'var(--muted)' }}>Cuisine: {b.cuisine}</p>}
-                          <a href={b.google_maps_url} target="_blank" rel="noopener noreferrer" className="text-xs inline-block mt-2" style={{ color: 'var(--primary)' }}>View Larger Map &rarr;</a>
-                        </div>
-                      </div>
+                      <Marker key={b.id || idx} position={[b.lat, b.lon]}>
+                        <Popup>
+                          <div style={{ fontSize: '13px', maxWidth: '260px' }}>
+                            <h3 style={{ fontWeight: 900, fontSize: '15px', margin: '0 0 4px' }}>{b.name}</h3>
+                            {b.type && b.type !== 'Type not specified' && <p style={{ margin: '2px 0' }}><strong>Type:</strong> {b.type}</p>}
+                            {b.category && b.category !== 'Category not specified' && <p style={{ margin: '2px 0' }}><strong>Cat:</strong> {b.category}</p>}
+                            {b.phone && b.phone !== 'Phone not listed' && <p style={{ margin: '2px 0' }}><strong>Phone:</strong> {b.phone}</p>}
+                            {b.email && b.email !== 'Email not available' && <p style={{ margin: '2px 0' }}><strong>Email:</strong> {b.email}</p>}
+                            {b.hr_email && <p style={{ margin: '2px 0', color: '#ef4444' }}><strong>HR:</strong> {b.hr_email}</p>}
+                            {b.address && b.address !== 'Address not available' && <p style={{ margin: '2px 0' }}><strong>Address:</strong> {b.address}</p>}
+                            {b.website && b.website !== 'Website not available' && <p style={{ margin: '2px 0' }}><strong>Website:</strong> <a href={b.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: 700 }}>OPEN</a></p>}
+                            {b.opening_hours && b.opening_hours !== 'Hours not available' && <p style={{ margin: '2px 0', fontSize: '11px' }}><strong>Hours:</strong> {b.opening_hours}</p>}
+                            <a href={b.google_maps_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '12px', marginTop: '4px', display: 'inline-block' }}>VIEW ON GOOGLE MAPS &rarr;</a>
+                          </div>
+                        </Popup>
+                      </Marker>
                     ))}
-                  </div>
+                  </MapContainer>
                 </div>
-              )}
 
-              {activeTab === 'table' && (
-                <div className="overflow-x-auto">
-                  <p className="mb-3 text-xs" style={{ color: 'var(--muted)' }}>
-                    {searchTerm ? `Showing ${filteredBusinesses.length} of ${businesses.length} (filtered by "${searchTerm}")` : `Showing all ${businesses.length} businesses`}
-                    {searchTerm && <button onClick={() => setSearchTerm('')} className="ml-2 hover:underline" style={{ color: 'var(--primary)' }}>Clear filter</button>}
-                  </p>
-                  <table className="w-full" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
-                    <thead>
-                      <tr>
-                        {['#', 'Name', 'Type', 'Contact Info', 'Location', 'Details', 'Map'].map(h => (
-                          <th key={h} className="px-4 py-3 text-left text-[10px] font-medium uppercase tracking-wider" style={{ background: 'var(--surface-alt)', color: 'var(--muted)', borderBottom: '1px solid var(--border)' }}>
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredBusinesses.map((b, idx) => (
-                        <tr key={b.id || idx} className="transition-colors" style={{ borderBottom: '1px solid var(--border)' }}
-                          onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-alt)'}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                          <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: 'var(--muted)' }}>{idx + 1}</td>
-                          <td className="px-4 py-3">
-                            <div className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{b.name}</div>
-                            {b.brand && <div className="text-[10px]" style={{ color: 'var(--muted)' }}>Brand: {b.brand}</div>}
-                            {b.operator && <div className="text-[10px]" style={{ color: 'var(--muted)' }}>Op: {b.operator}</div>}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <div className="text-xs" style={{ color: 'var(--foreground)' }}><span className="font-medium">Type:</span> {b.type}</div>
-                            <div className="text-xs" style={{ color: 'var(--muted)' }}><span className="font-medium">Cat:</span> {b.category}</div>
-                            {b.subcategory && <div className="text-xs" style={{ color: 'var(--muted)' }}><span className="font-medium">Sub:</span> {b.subcategory}</div>}
-                            {b.cuisine && <div className="text-[10px] mt-0.5" style={{ color: 'var(--muted)' }}>{b.cuisine}</div>}
-                          </td>
-                          <td className="px-4 py-3">
-                            {b.address && b.address !== 'Address not available' && <div className="text-xs" style={{ color: 'var(--foreground)' }}>{b.address}</div>}
-                            {b.phone && b.phone !== 'Phone not listed' && <div className="text-xs mt-1" style={{ color: 'var(--foreground)' }}>{b.phone}</div>}
-                            {b.email && b.email !== 'Email not available' && <div className="text-xs mt-1"><span className="font-medium">Email:</span> <span style={{ color: 'var(--primary-light)' }}>{b.email}</span></div>}
-                            {b.hr_email && <div className="text-xs mt-1 px-1 rounded" style={{ background: 'rgba(239,68,68,0.15)' }}><span style={{ color: '#ef4444' }}>HR: {b.hr_email}</span></div>}
-                            {b.website && b.website !== 'Website not available' && (
-                              <div className="mt-1"><a href={b.website} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: 'var(--primary)' }}>Website</a></div>
-                            )}
-                            {b.facebook && <div className="mt-1"><a href={`https://facebook.com/${b.facebook}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#1877f2' }}>Facebook</a></div>}
-                            {b.instagram && <div className="mt-1"><a href={`https://instagram.com/${b.instagram}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#e4405f' }}>Instagram</a></div>}
-                            {b.linkedin && <div className="mt-1"><a href={`https://${b.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#0a66c2' }}>LinkedIn</a></div>}
-                            {b.youtube && <div className="mt-1"><a href={`https://${b.youtube}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#ff0000' }}>YouTube</a></div>}
-                            {b.pinterest && <div className="mt-1"><a href={`https://${b.pinterest}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#e60023' }}>Pinterest</a></div>}
-                            {b.snapchat && <div className="mt-1"><a href={`https://${b.snapchat}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#fffc00' }}>Snapchat</a></div>}
-                            {b.discord && <div className="mt-1"><a href={`https://${b.discord}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#5865f2' }}>Discord</a></div>}
-                            {b.telegram && <div className="mt-1"><a href={`https://${b.telegram}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#0088cc' }}>Telegram</a></div>}
-                            {b.whatsapp && <div className="mt-1"><a href={`https://wa.me/${b.whatsapp}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#25d366' }}>WhatsApp</a></div>}
-                            {(b._enriched && b.email_patterns && b.email_patterns.length > 0) && (
-                              <div className="mt-1 text-[10px]" style={{ color: 'var(--muted)' }}>
-                                <details>
-                                  <summary className="cursor-pointer hover:opacity-80">Email patterns ({b.email_patterns.length})</summary>
-                                  <div className="mt-0.5 space-y-0.5 max-h-32 overflow-y-auto">
-                                    {b.email_patterns.map((ep, i) => (
-                                      <div key={i} style={HR_PREFIXES.some(p => ep.startsWith(p)) ? { color: '#ef4444' } : {}}>{ep}</div>
-                                    ))}
-                                  </div>
-                                </details>
-                              </div>
-                            )}
-                            {b._has_employees && b.employees?.length > 0 && (
-                              <div className="mt-1 text-[10px]" style={{ color: 'var(--muted)' }}>
-                                <details>
-                                  <summary className="cursor-pointer hover:opacity-80" style={{ color: 'var(--primary-light)' }}>👥 {b.employees.length} people</summary>
-                                  <div className="mt-0.5 space-y-0.5 max-h-40 overflow-y-auto">
-                                    {b.employees.slice(0, 15).map((emp, i) => (
-                                      <div key={i} className="border-b pb-0.5 mb-0.5" style={{ borderColor: 'var(--border)' }}>
-                                        <div className="font-medium" style={{ color: 'var(--foreground)' }}>{emp.name}</div>
-                                        {emp.title && <div style={{ color: 'var(--muted)' }}>{emp.title}</div>}
-                                        {emp.email && <div style={{ color: 'var(--primary-light)' }}>{emp.email}</div>}
-                                      </div>
-                                    ))}
-                                    {b.employees.length > 15 && <div className="text-center opacity-60">...and {b.employees.length - 15} more</div>}
-                                  </div>
-                                </details>
-                              </div>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <div className="text-xs" style={{ color: 'var(--muted)' }}>
-                              <div>Lat: {b.lat.toFixed(6)}</div>
-                              <div>Lon: {b.lon.toFixed(6)}</div>
-                            </div>
-                            {b.opening_hours && b.opening_hours !== 'Hours not available' && (
-                              <div className="mt-1.5 text-[10px]" style={{ color: 'var(--muted)' }}>
-                                <div className="font-medium">Hours:</div>
-                                <div className="whitespace-pre-wrap">{b.opening_hours}</div>
-                              </div>
-                            )}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="text-xs space-y-0.5" style={{ color: 'var(--muted)' }}>
-                              {b._data_score !== undefined && (
-                                <div className="flex items-center gap-1 mb-1">
-                                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: b._data_score >= 70 ? 'rgba(34,197,94,0.2)' : b._data_score >= 40 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: b._data_score >= 70 ? '#22c55e' : b._data_score >= 40 ? '#eab308' : '#ef4444' }}>{b._data_score}%</span>
-                                  <span className="text-[9px]">{b._data_missing?.length ? `${b._data_missing.length} missing` : 'complete'}</span>
-                                </div>
-                              )}
-                              {b._has_employees && <div className="text-[10px]" style={{ color: 'var(--primary-light)' }}>👥 {b.employees?.length} people found</div>}
-                              {b._size_hint && <div className="text-[10px] truncate max-w-[120px]" title={b._size_hint}>📊 {b._size_hint}</div>}
-                              {b.wheelchair && <div>♿ {b.wheelchair}</div>}
-                              {b.capacity && <div>Cap: {b.capacity}</div>}
-                              {b.building && <div>Bld: {b.building}</div>}
-                              {b.takeaway && <div>Take: {b.takeaway}</div>}
-                              {b.delivery && <div>Del: {b.delivery}</div>}
-                              {b.outdoor_seating && <div>Out: {b.outdoor_seating}</div>}
-                              {b.smoking && <div>Smk: {b.smoking}</div>}
-                              {b.wifi && <div>WiFi: {b.wifi}</div>}
-                              {b.parking && <div>Pk: {b.parking}</div>}
-                              {b.stars && <div>★ {b.stars}</div>}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <a href={b.google_maps_url} target="_blank" rel="noopener noreferrer" className="text-xs block mb-1" style={{ color: 'var(--primary)' }}>View Map</a>
-                            <div className="h-20 w-32 rounded overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-                              <iframe src={b.google_maps_embed} width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" title={`Map of ${b.name}`}></iframe>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {!filteredBusinesses.length && (
-                    <div className="text-center py-10 text-sm" style={{ color: 'var(--muted)' }}>
-                      No results match your filter &quot;{searchTerm}&quot;
-                      <button onClick={() => setSearchTerm('')} className="ml-2 hover:underline" style={{ color: 'var(--primary)' }}>Clear filter</button>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+                  {filteredBusinesses.map((b, idx) => (
+                    <div key={b.id || idx} style={{ background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '4px 4px 0px var(--border)', overflow: 'hidden' }}>
+                      <div style={{ height: '140px', borderBottom: '3px solid var(--border)' }}>
+                        <iframe src={b.google_maps_embed} width="100%" height="100%" style={{ border: 0, display: 'block' }} allowFullScreen="" loading="lazy" title={`Map of ${b.name}`} />
+                      </div>
+                      <div style={{ padding: '14px' }}>
+                        <h3 style={{ fontWeight: 900, fontSize: '14px', margin: '0 0 2px', color: 'var(--fg)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                          {b.name}
+                          {b._enriched && <BrutalBadge bg="rgba(99,102,241,0.15)" fg="var(--accent)">ENR</BrutalBadge>}
+                          {b.hr_email && <BrutalBadge bg="rgba(239,68,68,0.15)" fg="#ef4444">HR</BrutalBadge>}
+                          {b._data_score !== undefined && (
+                            <span style={{
+                              display: 'inline-block', padding: '2px 6px', fontSize: '10px', fontWeight: 700,
+                              border: '2px solid var(--border)',
+                              background: b._data_score >= 70 ? 'rgba(34,197,94,0.2)' : b._data_score >= 40 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)',
+                              color: b._data_score >= 70 ? '#22c55e' : b._data_score >= 40 ? '#eab308' : '#ef4444'
+                            }}>{b._data_score}%</span>
+                          )}
+                          {b._has_employees && <BrutalBadge bg="rgba(99,102,241,0.15)" fg="var(--accent)">👥{b.employees?.length}</BrutalBadge>}
+                        </h3>
+                        <p style={{ ...S.muted, margin: '4px 0' }}>{b.type}{b.category ? ` · ${b.category}` : ''}</p>
+                        {b.address && b.address !== 'Address not available' && <p style={{ ...S.muted, margin: '2px 0' }}>{b.address}</p>}
+                        {b.phone && b.phone !== 'Phone not listed' && <p style={{ fontWeight: 700, fontSize: '12px', margin: '4px 0', color: 'var(--fg)' }}>{b.phone}</p>}
+                        {b.email && b.email !== 'Email not available' && <p style={{ fontWeight: 700, fontSize: '12px', margin: '2px 0', color: 'var(--accent)' }}>{b.email}</p>}
+                        {b.hr_email && <p style={{ fontWeight: 700, fontSize: '12px', margin: '2px 0', color: '#ef4444' }}>HR: {b.hr_email}</p>}
+                        {b.website && b.website !== 'Website not available' && <p style={{ margin: '4px 0' }}><a href={b.website} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '12px', color: 'var(--accent)' }}>WEBSITE</a></p>}
+                        {b.linkedin && <p style={{ margin: '2px 0' }}><a href={`https://${b.linkedin}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '12px', color: '#0a66c2' }}>LINKEDIN</a></p>}
+                        {b.opening_hours && b.opening_hours !== 'Hours not available' && <p style={{ ...S.muted, fontSize: '11px', margin: '4px 0' }}>{b.opening_hours}</p>}
+                        {b.cuisine && <p style={{ ...S.muted, fontSize: '10px', margin: '2px 0' }}>Cuisine: {b.cuisine}</p>}
+                        <a href={b.google_maps_url} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: 'var(--accent)', marginTop: '8px', display: 'inline-block' }}>VIEW LARGER MAP &rarr;</a>
+                      </div>
                     </div>
-                  )}
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+
+            {/* TABLE VIEW */}
+            {activeTab === 'table' && (
+              <div style={{ overflowX: 'auto' }}>
+                <p style={{ ...S.muted, marginBottom: '10px' }}>
+                  {searchTerm ? `Showing ${filteredBusinesses.length} of ${businesses.length} (filtered by "${searchTerm}")` : `Showing all ${businesses.length} businesses`}
+                  {searchTerm && <button onClick={() => setSearchTerm('')} style={{ marginLeft: '8px', fontWeight: 700, textDecoration: 'underline', background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '12px' }}>CLEAR</button>}
+                </p>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      {['#', 'Name', 'Type', 'Contact Info', 'Location', 'Details', 'Map'].map(h => (
+                        <th key={h} style={TH_STYLE}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredBusinesses.map((b, idx) => (
+                      <tr key={b.id || idx}
+                        onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                        <td style={{ ...TD_STYLE, color: 'var(--muted)', fontWeight: 700, width: '30px' }}>{idx + 1}</td>
+                        <td style={TD_STYLE}>
+                          <div style={{ fontWeight: 900, fontSize: '14px', color: 'var(--fg)' }}>{b.name}</div>
+                          {b.brand && <div style={{ ...S.muted, fontSize: '10px' }}>Brand: {b.brand}</div>}
+                          {b.operator && <div style={{ ...S.muted, fontSize: '10px' }}>Op: {b.operator}</div>}
+                        </td>
+                        <td style={TD_STYLE}>
+                          <div style={{ fontWeight: 700, fontSize: '12px', color: 'var(--fg)' }}>{b.type}</div>
+                          <div style={{ ...S.muted, fontSize: '10px' }}>{b.category}{b.subcategory ? ` / ${b.subcategory}` : ''}</div>
+                          {b.cuisine && <div style={{ ...S.muted, fontSize: '10px' }}>{b.cuisine}</div>}
+                        </td>
+                        <td style={TD_STYLE}>
+                          {b.address && b.address !== 'Address not available' && <div style={{ fontWeight: 700, fontSize: '12px', color: 'var(--fg)' }}>{b.address}</div>}
+                          {b.phone && b.phone !== 'Phone not listed' && <div style={{ fontWeight: 700, fontSize: '12px', color: 'var(--fg)', marginTop: '4px' }}>{b.phone}</div>}
+                          {b.email && b.email !== 'Email not available' && <div style={{ fontWeight: 700, fontSize: '12px', color: 'var(--accent)', marginTop: '4px' }}>{b.email}</div>}
+                          {b.hr_email && <div style={{ fontWeight: 700, fontSize: '11px', color: '#ef4444', marginTop: '4px', background: 'rgba(239,68,68,0.1)', padding: '2px 6px', border: '2px solid #ef4444', display: 'inline-block' }}>HR: {b.hr_email}</div>}
+                          {b.website && b.website !== 'Website not available' && <div style={{ marginTop: '4px' }}><a href={b.website} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '12px', color: 'var(--accent)' }}>WEBSITE</a></div>}
+                          {b.facebook && <div style={{ marginTop: '2px' }}><a href={`https://facebook.com/${b.facebook}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#1877f2' }}>FB</a></div>}
+                          {b.instagram && <div style={{ marginTop: '2px' }}><a href={`https://instagram.com/${b.instagram}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#e4405f' }}>IG</a></div>}
+                          {b.linkedin && <div style={{ marginTop: '2px' }}><a href={`https://${b.linkedin}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#0a66c2' }}>LI</a></div>}
+                          {b.youtube && <div style={{ marginTop: '2px' }}><a href={`https://${b.youtube}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#ff0000' }}>YT</a></div>}
+                          {b.pinterest && <div style={{ marginTop: '2px' }}><a href={`https://${b.pinterest}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#e60023' }}>PIN</a></div>}
+                          {b.snapchat && <div style={{ marginTop: '2px' }}><a href={`https://${b.snapchat}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#fffc00' }}>SC</a></div>}
+                          {b.discord && <div style={{ marginTop: '2px' }}><a href={`https://${b.discord}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#5865f2' }}>DC</a></div>}
+                          {b.telegram && <div style={{ marginTop: '2px' }}><a href={`https://${b.telegram}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#0088cc' }}>TG</a></div>}
+                          {b.whatsapp && <div style={{ marginTop: '2px' }}><a href={`https://wa.me/${b.whatsapp}`} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: '#25d366' }}>WA</a></div>}
+                          {(b._enriched && b.email_patterns && b.email_patterns.length > 0) && (
+                            <div style={{ marginTop: '6px', fontSize: '10px' }}>
+                              <details>
+                                <summary style={{ cursor: 'pointer', fontWeight: 700, color: 'var(--muted)' }}>EMAIL PATTERNS ({b.email_patterns.length})</summary>
+                                <div style={{ marginTop: '4px', maxHeight: '120px', overflowY: 'auto' }}>
+                                  {b.email_patterns.map((ep, i) => (
+                                    <div key={i} style={{ padding: '1px 0', fontWeight: HR_PREFIXES.some(p => ep.startsWith(p)) ? 700 : 400, color: HR_PREFIXES.some(p => ep.startsWith(p)) ? '#ef4444' : 'var(--fg)' }}>{ep}</div>
+                                  ))}
+                                </div>
+                              </details>
+                            </div>
+                          )}
+                          {b._has_employees && b.employees?.length > 0 && (
+                            <div style={{ marginTop: '6px', fontSize: '10px' }}>
+                              <details>
+                                <summary style={{ cursor: 'pointer', fontWeight: 700, color: 'var(--accent)' }}>👥 {b.employees.length} PEOPLE</summary>
+                                <div style={{ marginTop: '4px', maxHeight: '160px', overflowY: 'auto' }}>
+                                  {b.employees.slice(0, 15).map((emp, i) => (
+                                    <div key={i} style={{ padding: '3px 0', borderBottom: i < Math.min(15, b.employees.length) - 1 ? '1px solid var(--border)' : 'none' }}>
+                                      <div style={{ fontWeight: 700, color: 'var(--fg)' }}>{emp.name}</div>
+                                      {emp.title && <div style={{ ...S.muted }}>{emp.title}</div>}
+                                      {emp.email && <div style={{ fontWeight: 700, color: 'var(--accent)' }}>{emp.email}</div>}
+                                    </div>
+                                  ))}
+                                  {b.employees.length > 15 && <div style={{ textAlign: 'center', opacity: 0.6, padding: '4px', ...S.muted }}>...and {b.employees.length - 15} more</div>}
+                                </div>
+                              </details>
+                            </div>
+                          )}
+                        </td>
+                        <td style={TD_STYLE}>
+                          <div style={{ ...S.muted, fontSize: '11px' }}>
+                            <div style={{ fontWeight: 700 }}>Lat: {b.lat.toFixed(6)}</div>
+                            <div style={{ fontWeight: 700 }}>Lon: {b.lon.toFixed(6)}</div>
+                          </div>
+                          {b.opening_hours && b.opening_hours !== 'Hours not available' && (
+                            <div style={{ marginTop: '8px', fontSize: '10px' }}>
+                              <div style={{ fontWeight: 700, color: 'var(--fg)' }}>HOURS</div>
+                              <div style={{ whiteSpace: 'pre-wrap', color: 'var(--muted)' }}>{b.opening_hours}</div>
+                            </div>
+                          )}
+                        </td>
+                        <td style={TD_STYLE}>
+                          <div style={{ fontSize: '11px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                            {b._data_score !== undefined && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{
+                                  padding: '1px 6px', fontSize: '10px', fontWeight: 700, border: '2px solid var(--border)',
+                                  background: b._data_score >= 70 ? 'rgba(34,197,94,0.2)' : b._data_score >= 40 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)',
+                                  color: b._data_score >= 70 ? '#22c55e' : b._data_score >= 40 ? '#eab308' : '#ef4444'
+                                }}>{b._data_score}%</span>
+                                <span style={{ ...S.muted, fontSize: '9px' }}>{b._data_missing?.length ? `${b._data_missing.length} missing` : 'COMPLETE'}</span>
+                              </div>
+                            )}
+                            {b._has_employees && <span style={{ fontWeight: 700, fontSize: '10px', color: 'var(--accent)' }}>👥 {b.employees?.length} people</span>}
+                            {b._size_hint && <span style={{ ...S.muted, fontSize: '9px' }} title={b._size_hint}>📊 {b._size_hint}</span>}
+                            {b.wheelchair && <span>♿ {b.wheelchair}</span>}
+                            {b.capacity && <span>Cap: {b.capacity}</span>}
+                            {b.building && <span>Bld: {b.building}</span>}
+                            {b.takeaway && <span>Take: {b.takeaway}</span>}
+                            {b.delivery && <span>Del: {b.delivery}</span>}
+                            {b.outdoor_seating && <span>Out: {b.outdoor_seating}</span>}
+                            {b.smoking && <span>Smk: {b.smoking}</span>}
+                            {b.wifi && <span>WiFi: {b.wifi}</span>}
+                            {b.parking && <span>Pk: {b.parking}</span>}
+                            {b.stars && <span>★ {b.stars}</span>}
+                          </div>
+                        </td>
+                        <td style={TD_STYLE}>
+                          <a href={b.google_maps_url} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: '11px', color: 'var(--accent)', display: 'block', marginBottom: '6px' }}>MAP</a>
+                          <div style={{ width: '120px', height: '70px', border: '2px solid var(--border)' }}>
+                            <iframe src={b.google_maps_embed} width="100%" height="100%" style={{ border: 0, display: 'block' }} allowFullScreen="" loading="lazy" title={`Map of ${b.name}`} />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!filteredBusinesses.length && (
+                  <div style={{ textAlign: 'center', padding: '40px 0', ...S.muted }}>
+                    No results match your filter &ldquo;{searchTerm}&rdquo;
+                    <button onClick={() => setSearchTerm('')} style={{ marginLeft: '8px', fontWeight: 700, textDecoration: 'underline', background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer' }}>CLEAR</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Summary */}
+        {/* SUMMARY */}
         {businesses.length > 0 && (
-          <div className="mt-4 text-center text-xs" style={{ color: 'var(--muted)' }}>
-            Found {filteredBusinesses.length} of {businesses.length} businesses in {place || 'current area'}
-            {searchTerm && ` matching "${searchTerm}"`}
+          <div style={{ textAlign: 'center', padding: '12px', ...S.muted, border: '2px solid var(--border)', background: 'var(--surface)', boxShadow: '3px 3px 0px var(--border)' }}>
+            Found <strong>{filteredBusinesses.length}</strong> of <strong>{businesses.length}</strong> businesses{place ? ` in ${place}` : ''}{searchTerm ? ` matching "${searchTerm}"` : ''}
           </div>
         )}
 
-        {/* Empty */}
+        {/* EMPTY STATE */}
         {!businesses.length && !loading && !error && (
-          <div className="rounded-xl p-12 text-center" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(6,182,212,0.2))' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" style={{ color: 'var(--primary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <div style={{ ...S.section, textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ width: '60px', height: '60px', background: 'var(--surface2)', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <svg style={{ width: '30px', height: '30px', color: 'var(--fg)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <h2 className="text-lg font-medium" style={{ color: 'var(--foreground)' }}>Search for businesses</h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Enter a location above and click Find Businesses to discover local services, shops, and more.</p>
+            <h2 style={{ fontSize: '18px', fontWeight: 900, color: 'var(--fg)', margin: '0 0 6px', textTransform: 'uppercase' }}>Find Businesses</h2>
+            <p style={{ ...S.muted, fontSize: '14px' }}>Enter a location and click FIND BUSINESSES to discover local services, shops, and more.</p>
           </div>
         )}
 
-        {/* Loading */}
+        {/* LOADING OVERLAY */}
         {loading && (
-          <div className="fixed inset-0 flex items-center justify-center z-50" style={{ background: 'rgba(0,0,0,0.6)' }}>
-            <div className="rounded-xl p-8 shadow-xl text-center" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <svg className="animate-spin h-10 w-10 mx-auto mb-4" style={{ color: 'var(--primary)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+            <div style={{ ...S.section, textAlign: 'center', padding: '32px 48px' }}>
+              <svg className="animate-spin" style={{ width: '36px', height: '36px', color: 'var(--accent)', margin: '0 auto 12px', display: 'block' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              <p className="font-medium" style={{ color: 'var(--foreground)' }}>Searching for businesses...</p>
-              <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>This may take a moment</p>
+              <p style={{ fontWeight: 900, fontSize: '16px', color: 'var(--fg)', margin: 0 }}>SEARCHING...</p>
+              <p style={{ ...S.muted, margin: '4px 0 0' }}>This may take a moment</p>
             </div>
           </div>
         )}

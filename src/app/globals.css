@@ -1,64 +1,60 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-primary-light: var(--primary-light);
-  --color-secondary: var(--secondary);
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
   --color-surface: var(--surface);
-  --color-surface-alt: var(--surface-alt);
+  --color-surface2: var(--surface2);
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent2: var(--accent2);
+  --color-accent3: var(--accent3);
+  --color-accent4: var(--accent4);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 :root {
-  --background: #0f172a;
-  --foreground: #e2e8f0;
-  --primary: #6366f1;
-  --primary-light: #818cf8;
-  --secondary: #06b6d4;
-  --surface: #1e293b;
-  --surface-alt: #334155;
-  --border: #475569;
-  --muted: #94a3b8;
-  --accent: #f59e0b;
+  --bg: #f5f0eb;
+  --fg: #1a1a1a;
+  --surface: #ffffff;
+  --surface2: #e8e3dd;
+  --border: #1a1a1a;
+  --muted: #666666;
+  --accent: #2563eb;
+  --accent2: #ec4899;
+  --accent3: #10b981;
+  --accent4: #f59e0b;
+  --shadow: 4px 4px 0px #1a1a1a;
 }
 
 .light {
-  --background: #f8fafc;
-  --foreground: #1e293b;
-  --primary: #4f46e5;
-  --primary-light: #6366f1;
-  --secondary: #0891b2;
+  --bg: #f5f0eb;
+  --fg: #1a1a1a;
   --surface: #ffffff;
-  --surface-alt: #f1f5f9;
-  --border: #cbd5e1;
-  --muted: #64748b;
-  --accent: #d97706;
+  --surface2: #e8e3dd;
+  --border: #1a1a1a;
+  --muted: #666666;
+  --accent: #2563eb;
+  --accent2: #ec4899;
+  --accent3: #10b981;
+  --accent4: #f59e0b;
+  --shadow: 4px 4px 0px #1a1a1a;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--fg);
   font-family: Arial, Helvetica, sans-serif;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: none;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+* {
+  border-color: var(--border);
 }
-::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
-}
+
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: var(--surface2); }
+::-webkit-scrollbar-thumb { background: var(--border); border: 2px solid var(--surface2); }
+::-webkit-scrollbar-thumb:hover { background: var(--fg); }
