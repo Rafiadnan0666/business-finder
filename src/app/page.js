@@ -230,8 +230,7 @@ export default function Home() {
             const enr = enriched.find(e => e.id === orig.id) || enriched[idx];
             if (!enr) return { ...orig, _enriched: true };
             const m = { ...orig };
-            m.hr_email = enr.hr_email || m.hr_email;
-            m.hr_emails = enr.hr_emails || m.hr_emails;
+            m.hr_email = enr.hr_email || m.hr_email; m.hr_emails = enr.hr_emails || m.hr_emails;
             m.email_patterns = enr.email_patterns || m.email_patterns;
             m.email = enr.email && enr.email !== 'Email not available' ? enr.email : m.email;
             m.phone = enr.phone && enr.phone !== 'Phone not listed' ? enr.phone : m.phone;
@@ -241,8 +240,14 @@ export default function Home() {
             m.facebook = enr.facebook || m.facebook; m.instagram = enr.instagram || m.instagram;
             m.twitter = enr.twitter || m.twitter; m.linkedin = enr.linkedin || m.linkedin;
             m.youtube = enr.youtube || m.youtube; m.tiktok = enr.tiktok || m.tiktok;
+            m.pinterest = enr.pinterest || m.pinterest; m.snapchat = enr.snapchat || m.snapchat;
+            m.discord = enr.discord || m.discord; m.telegram = enr.telegram || m.telegram;
+            m.whatsapp = enr.whatsapp || m.whatsapp;
             m.type = enr.type && enr.type !== 'Type not specified' ? enr.type : m.type;
             m.category = enr.category && enr.category !== 'Category not specified' ? enr.category : m.category;
+            m.employees = enr.employees || m.employees; m._data_score = enr._data_score || m._data_score;
+            m._data_missing = enr._data_missing || m._data_missing; m._size_hint = enr._size_hint || m._size_hint;
+            m._has_employees = enr._has_employees || m._has_employees;
             m._enriched = true;
             return m;
           });
@@ -298,6 +303,12 @@ export default function Home() {
       'All Tags': b.all_tags,
       'Email Patterns': b.email_patterns ? b.email_patterns.join('; ') : '',
       'HR Emails': b.hr_emails ? b.hr_emails.join('; ') : '',
+      Pinterest: b.pinterest || '', Snapchat: b.snapchat || '',
+      Discord: b.discord || '', Telegram: b.telegram || '',
+      WhatsApp: b.whatsapp || '',
+      Employees: b.employees?.length ? b.employees.map(e => `${e.name}${e.title ? ` (${e.title})` : ''}${e.email ? ` - ${e.email}` : ''}`).join('; ') : '',
+      'Data Score': b._data_score !== undefined ? `${b._data_score}%` : '',
+      'Size Hint': b._size_hint || '',
       Enriched: b._enriched ? 'Yes' : 'No'
     }));
     const csv = Papa.unparse(csvData);
@@ -337,8 +348,14 @@ export default function Home() {
         m.facebook = enr.facebook || m.facebook; m.instagram = enr.instagram || m.instagram;
         m.twitter = enr.twitter || m.twitter; m.linkedin = enr.linkedin || m.linkedin;
         m.youtube = enr.youtube || m.youtube; m.tiktok = enr.tiktok || m.tiktok;
+        m.pinterest = enr.pinterest || m.pinterest; m.snapchat = enr.snapchat || m.snapchat;
+        m.discord = enr.discord || m.discord; m.telegram = enr.telegram || m.telegram;
+        m.whatsapp = enr.whatsapp || m.whatsapp;
         m.type = enr.type && enr.type !== 'Type not specified' ? enr.type : m.type;
         m.category = enr.category && enr.category !== 'Category not specified' ? enr.category : m.category;
+        m.employees = enr.employees || m.employees; m._data_score = enr._data_score || m._data_score;
+        m._data_missing = enr._data_missing || m._data_missing; m._size_hint = enr._size_hint || m._size_hint;
+        m._has_employees = enr._has_employees || m._has_employees;
         m._enriched = true;
         return m;
       });
@@ -583,6 +600,10 @@ export default function Home() {
                             {b.name}
                             {b._enriched && <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.2)', color: 'var(--primary-light)' }}>ENR</span>}
                             {b.hr_email && <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>HR</span>}
+                            {b._data_score !== undefined && (
+                              <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: b._data_score >= 70 ? 'rgba(34,197,94,0.2)' : b._data_score >= 40 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: b._data_score >= 70 ? '#22c55e' : b._data_score >= 40 ? '#eab308' : '#ef4444' }}>{b._data_score}%</span>
+                            )}
+                            {b._has_employees && <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(99,102,241,0.15)', color: 'var(--primary-light)' }}>👥{b.employees?.length}</span>}
                           </h3>
                           <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>{b.type} {b.category && `\u2022 ${b.category}`}</p>
                           {b.address && b.address !== 'Address not available' && <p className="text-xs mt-1.5" style={{ color: 'var(--muted)' }}>{b.address}</p>}
@@ -648,14 +669,36 @@ export default function Home() {
                             {b.instagram && <div className="mt-1"><a href={`https://instagram.com/${b.instagram}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#e4405f' }}>Instagram</a></div>}
                             {b.linkedin && <div className="mt-1"><a href={`https://${b.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#0a66c2' }}>LinkedIn</a></div>}
                             {b.youtube && <div className="mt-1"><a href={`https://${b.youtube}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#ff0000' }}>YouTube</a></div>}
+                            {b.pinterest && <div className="mt-1"><a href={`https://${b.pinterest}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#e60023' }}>Pinterest</a></div>}
+                            {b.snapchat && <div className="mt-1"><a href={`https://${b.snapchat}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#fffc00' }}>Snapchat</a></div>}
+                            {b.discord && <div className="mt-1"><a href={`https://${b.discord}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#5865f2' }}>Discord</a></div>}
+                            {b.telegram && <div className="mt-1"><a href={`https://${b.telegram}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#0088cc' }}>Telegram</a></div>}
+                            {b.whatsapp && <div className="mt-1"><a href={`https://wa.me/${b.whatsapp}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#25d366' }}>WhatsApp</a></div>}
                             {(b._enriched && b.email_patterns && b.email_patterns.length > 0) && (
                               <div className="mt-1 text-[10px]" style={{ color: 'var(--muted)' }}>
                                 <details>
                                   <summary className="cursor-pointer hover:opacity-80">Email patterns ({b.email_patterns.length})</summary>
                                   <div className="mt-0.5 space-y-0.5 max-h-32 overflow-y-auto">
                                     {b.email_patterns.map((ep, i) => (
-                                      <div key={i} className={HR_PREFIXES.some(p => ep.startsWith(p)) ? '' : ''} style={HR_PREFIXES.some(p => ep.startsWith(p)) ? { color: '#ef4444' } : {}}>{ep}</div>
+                                      <div key={i} style={HR_PREFIXES.some(p => ep.startsWith(p)) ? { color: '#ef4444' } : {}}>{ep}</div>
                                     ))}
+                                  </div>
+                                </details>
+                              </div>
+                            )}
+                            {b._has_employees && b.employees?.length > 0 && (
+                              <div className="mt-1 text-[10px]" style={{ color: 'var(--muted)' }}>
+                                <details>
+                                  <summary className="cursor-pointer hover:opacity-80" style={{ color: 'var(--primary-light)' }}>👥 {b.employees.length} people</summary>
+                                  <div className="mt-0.5 space-y-0.5 max-h-40 overflow-y-auto">
+                                    {b.employees.slice(0, 15).map((emp, i) => (
+                                      <div key={i} className="border-b pb-0.5 mb-0.5" style={{ borderColor: 'var(--border)' }}>
+                                        <div className="font-medium" style={{ color: 'var(--foreground)' }}>{emp.name}</div>
+                                        {emp.title && <div style={{ color: 'var(--muted)' }}>{emp.title}</div>}
+                                        {emp.email && <div style={{ color: 'var(--primary-light)' }}>{emp.email}</div>}
+                                      </div>
+                                    ))}
+                                    {b.employees.length > 15 && <div className="text-center opacity-60">...and {b.employees.length - 15} more</div>}
                                   </div>
                                 </details>
                               </div>
@@ -675,6 +718,14 @@ export default function Home() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="text-xs space-y-0.5" style={{ color: 'var(--muted)' }}>
+                              {b._data_score !== undefined && (
+                                <div className="flex items-center gap-1 mb-1">
+                                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: b._data_score >= 70 ? 'rgba(34,197,94,0.2)' : b._data_score >= 40 ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)', color: b._data_score >= 70 ? '#22c55e' : b._data_score >= 40 ? '#eab308' : '#ef4444' }}>{b._data_score}%</span>
+                                  <span className="text-[9px]">{b._data_missing?.length ? `${b._data_missing.length} missing` : 'complete'}</span>
+                                </div>
+                              )}
+                              {b._has_employees && <div className="text-[10px]" style={{ color: 'var(--primary-light)' }}>👥 {b.employees?.length} people found</div>}
+                              {b._size_hint && <div className="text-[10px] truncate max-w-[120px]" title={b._size_hint}>📊 {b._size_hint}</div>}
                               {b.wheelchair && <div>♿ {b.wheelchair}</div>}
                               {b.capacity && <div>Cap: {b.capacity}</div>}
                               {b.building && <div>Bld: {b.building}</div>}
