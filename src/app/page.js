@@ -214,7 +214,7 @@ export default function Home() {
       } else {
         selectedCategories.forEach(c => { const q = getOverpassCategoryQuery(c, searchRadius, lat, lon); if (q) qp.push(q); });
       }
-      const query = `[out:json][timeout:90][maxsize:${maxSize}];(${qp.join('\n')});out center;`;
+      const query = `[out:json][timeout:90][maxsize:${maxSize}];(${qp.join('\n')});out center 60;`;
       const overpass = await queryOverpass(query);
       const results = processOverpassResults(overpass.data.elements);
       setBusinesses(results);
@@ -222,8 +222,9 @@ export default function Home() {
       if (results.length > 0 && enrichEnabled) {
         try {
           setEnriching(true);
-          setEnrichProgress({ current: 0, total: results.length });
-          const enrichRes = await axios.post('/api/enrich', { businesses: results.filter(b => b.name && b.name !== 'N/A') }, { timeout: 180000 });
+          const toEnrich = results.filter(b => b.name && b.name !== 'N/A').slice(0, 30);
+          setEnrichProgress({ current: 0, total: toEnrich.length });
+          const enrichRes = await axios.post('/api/enrich', { businesses: toEnrich }, { timeout: 300000 });
           const enriched = enrichRes.data.businesses || [];
           const merged = results.map((orig, idx) => {
             const enr = enriched.find(e => e.id === orig.id) || enriched[idx];
@@ -315,10 +316,11 @@ export default function Home() {
 
   const enrichCurrentResults = useCallback(async () => {
     if (!businesses.length) return;
-    setEnriching(true); setEnrichProgress({ current: 0, total: businesses.length });
+    const toEnrich = businesses.filter(b => b.name && b.name !== 'N/A').slice(0, 30);
+    setEnriching(true); setEnrichProgress({ current: 0, total: toEnrich.length });
     enrichAbortRef.current = false;
     try {
-      const response = await axios.post('/api/enrich', { businesses: businesses.filter(b => b.name && b.name !== 'N/A') }, { timeout: 180000 });
+      const response = await axios.post('/api/enrich', { businesses: toEnrich }, { timeout: 300000 });
       if (enrichAbortRef.current) return;
       const enriched = response.data.businesses || [];
       const merged = businesses.map((orig, idx) => {

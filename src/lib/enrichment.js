@@ -27,11 +27,9 @@ const SKIP_PATTERNS = [
 ];
 
 const SUBPAGES = [
-  '/contact', '/about', '/team', '/careers', '/hr',
-  '/jobs', '/recruitment', '/contact-us', '/about-us',
-  '/locations', '/store-locator', '/find-us',
-  '/corporate', '/company', '/our-team', '/offices',
-  '/support', '/services'
+  '/contact', '/about', '/careers', '/hr',
+  '/jobs', '/contact-us', '/about-us',
+  '/locations', '/team', '/offices'
 ];
 
 const USER_AGENTS = [
@@ -41,7 +39,7 @@ const USER_AGENTS = [
 ];
 
 const domainCache = new Map();
-const MAX_CONCURRENT = 5;
+const MAX_CONCURRENT = 8;
 
 function getRandomUA() {
   return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
@@ -211,7 +209,7 @@ function extractPaymentMethods(html) {
   return [...new Set(methods)];
 }
 
-async function fetchUrl(url, timeout = 5000) {
+async function fetchUrl(url, timeout = 4000) {
   if (domainCache.has(url)) return domainCache.get(url);
   try {
     const resp = await fetch(url, {
@@ -242,12 +240,12 @@ export async function enrichBusiness(business) {
   let foundDomain = domain;
 
   if (domain) {
-    htmls = await throttledFetch([`https://${domain}`, `https://www.${domain}`, `http://${domain}`], 3, 5000);
+    htmls = await throttledFetch([`https://${domain}`, `https://www.${domain}`], 2, 4000);
   }
 
   if (!htmls.length && business.name) {
     const constructed = tryConstructDomain(business.name);
-    const results = await throttledFetch(constructed, 5, 4000);
+    const results = await throttledFetch(constructed, 5, 3000);
     if (results.length) {
       const foundUrl = constructed[constructed.indexOf(constructed.find((u, i) => results[i]))];
       if (foundUrl) {
@@ -260,7 +258,7 @@ export async function enrichBusiness(business) {
 
   if (foundDomain) {
     const paths = SUBPAGES.map(p => `https://${foundDomain}${p}`);
-    const subResults = await throttledFetch(paths, 5, 3000);
+    const subResults = await throttledFetch(paths, 8, 2000);
     htmls.push(...subResults);
   }
 
@@ -486,7 +484,7 @@ async function enrichSingle(business) {
 
 export async function enrichAll(businesses, onProgress) {
   const results = [];
-  const batchSize = 3;
+  const batchSize = 5;
   for (let i = 0; i < businesses.length; i += batchSize) {
     const batch = businesses.slice(i, i + batchSize);
     const settled = await Promise.allSettled(batch.map(b => enrichSingle(b)));
