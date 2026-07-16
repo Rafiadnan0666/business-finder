@@ -53,36 +53,56 @@ function getOverpassCategoryQuery(category, radius, lat, lon) {
   return map[category] || '';
 }
 
+const OVERPASS_ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.openstreetmap.ie/api/interpreter'
+];
+
 function getAllCategoryQuery(radius, lat, lon) {
   const r = radius * 1000;
-  return `
-    node["shop"](around:${r},${lat},${lon});
-    node["amenity"~"restaurant|cafe|bar|pub|fast_food|food_court|pharmacy|bank|clinic|hospital|dentist|doctors|veterinary|atm|marketplace|car_rental|car_repair|car_wash|fuel|parking|hotel|motel|guest_house|hostel|hairdresser|beauty_salon|laundry|dry_cleaning|school|university|college"](around:${r},${lat},${lon});
-    node["office"](around:${r},${lat},${lon});
-    node["craft"](around:${r},${lat},${lon});
-    node["building"="mall"](around:${r},${lat},${lon});
-    node["shop"="mall"](around:${r},${lat},${lon});
-    node["shop"="supermarket"](around:${r},${lat},${lon});
-  `;
+  const amens = ['restaurant','cafe','bar','pub','fast_food','pharmacy','bank','clinic','hospital','dentist','school','university','college','fuel','parking','hotel','motel','hostel'];
+  const lines = amens.map(a => `node["amenity"="${a}"](around:${r},${lat},${lon});`);
+  lines.push(`node["shop"](around:${r},${lat},${lon});`);
+  lines.push(`node["office"](around:${r},${lat},${lon});`);
+  lines.push(`node["craft"](around:${r},${lat},${lon});`);
+  lines.push(`node["building"="mall"](around:${r},${lat},${lon});`);
+  lines.push(`node["shop"="supermarket"](around:${r},${lat},${lon});`);
+  return lines.join('\n');
+}
+
+async function queryOverpass(query, attempt = 0) {
+  const endpoint = OVERPASS_ENDPOINTS[attempt % OVERPASS_ENDPOINTS.length];
+  try {
+    return await axios.post(endpoint, query, {
+      headers: { 'Content-Type': 'text/plain' },
+      timeout: Math.min(30000 + attempt * 15000, 90000)
+    });
+  } catch (err) {
+    if (attempt < 2) return queryOverpass(query, attempt + 1);
+    throw err;
+  }
 }
 
 function processOverpassResults(elements) {
-  return elements.filter(e => e.tags?.name).map(e => {
+  return elements.filter(e => e.tags?.name && (e.lat ?? e.center?.lat)).map(e => {
     const tags = e.tags || {};
+    const lat = e.lat ?? e.center?.lat;
+    const lon = e.lon ?? e.center?.lon;
     return {
       id: e.id, name: tags.name,
       type: tags.shop || tags.amenity || tags.office || tags.leisure || tags.tourism || tags.craft || tags.building || '',
       category: tags.shop || tags.amenity || tags.office || tags.craft || tags.building || '',
       subcategory: tags.cuisine || tags.shop || tags.office || tags.amenity || tags.craft || '',
-      lat: e.lat, lon: e.lon,
+      lat, lon,
       phone: cleanPhone(tags.phone || tags['contact:phone']),
       address: [tags['addr:street'], tags['addr:housenumber'], tags['addr:city'], tags['addr:postcode'], tags['addr:country']].filter(Boolean).join(', '),
       website: tags.website || tags['contact:website'] || '',
       email: tags.email || tags['contact:email'] || '',
       opening_hours: tags.opening_hours || '',
       description: getDescription(tags),
-      google_maps_url: `https://www.google.com/maps?q=${e.lat},${e.lon}`,
-      google_maps_embed: `https://maps.google.com/maps?q=${e.lat},${e.lon}&z=15&output=embed`,
+      google_maps_url: `https://www.google.com/maps?q=${lat},${lon}`,
+      google_maps_embed: `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`,
       brand: tags.brand || '', operator: tags.operator || '',
       facebook: tags['contact:facebook'] || '', instagram: tags['contact:instagram'] || '',
       twitter: tags['contact:twitter'] || '', linkedin: tags['contact:linkedin'] || tags.linkedin || '',
@@ -188,10 +208,14 @@ export default function Home() {
       const { lat, lon } = geo.data[0];
       setCenter([parseFloat(lat), parseFloat(lon)]);
       let qp = [];
-      if (selectedCategories.length === 0) qp = [getAllCategoryQuery(searchRadius, lat, lon)];
-      else selectedCategories.forEach(c => { const q = getOverpassCategoryQuery(c, searchRadius, lat, lon); if (q) qp.push(q); });
-      const query = `[out:json][timeout:60];(${qp.join('\n')});out body;>;out skel qt;`;
-      const overpass = await axios.post(`https://overpass-api.de/api/interpreter`, query, { headers: { 'Content-Type': 'text/plain' }, timeout: 70000 });
+      const maxSize = Math.min(50000000, 2000000 + searchRadius * 2000000);
+      if (selectedCategories.length === 0) {
+        qp = [getAllCategoryQuery(searchRadius, lat, lon)];
+      } else {
+        selectedCategories.forEach(c => { const q = getOverpassCategoryQuery(c, searchRadius, lat, lon); if (q) qp.push(q); });
+      }
+      const query = `[out:json][timeout:90][maxsize:${maxSize}];(${qp.join('\n')});out center;`;
+      const overpass = await queryOverpass(query);
       const results = processOverpassResults(overpass.data.elements);
       setBusinesses(results);
       if (results.length === 0) setError('No businesses found in this area. Try increasing the radius or changing categories.');
@@ -233,9 +257,9 @@ export default function Home() {
       setSearchHistory(uh); saveHistory(uh);
     } catch (error) {
       console.error("Search error:", error);
-      if (error.code === 'ECONNABORTED') setError("Request timed out. The area may be too large. Try a smaller radius.");
-      else if (error.response?.status === 504) setError("The Overpass API timed out. Try a smaller radius or fewer categories.");
-      else setError(error.message || "Search failed. Please try again.");
+      if (error.code === 'ECONNABORTED' || error.response?.status === 504) {
+        setError("Query timed out for this area. Try a smaller radius (3-8 km) or fewer categories, or try a more specific location.");
+      } else setError(error.message || "Search failed. Please try again.");
     }
     setLoading(false);
   };
