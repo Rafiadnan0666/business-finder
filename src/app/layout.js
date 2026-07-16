@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "some of app shit",
-  description: "idk some full of crap",
+  title: "Advanced Business Finder - Discover Local Businesses Worldwide",
+  description: "Find and discover businesses, shops, restaurants, and services in any location worldwide using OpenStreetMap data. Search by category, radius, and location.",
 };
 
 export default function RootLayout({ children }) {
