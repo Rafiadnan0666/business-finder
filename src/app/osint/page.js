@@ -93,144 +93,175 @@ export default function OSINTPage() {
 function PhotoSearch() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [exif, setExif] = useState(null);
-  const [dominantColors, setDominantColors] = useState([]);
-  const [qrResult, setQrResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState('');
+  const [info, setInfo] = useState(null);
   const fileRef = useRef();
+  const canvasRef = useRef();
 
   async function handleFile(e) {
     const file = e.target.files?.[0];
     if (!file) return;
     setImage(file);
-    setPreview(URL.createObjectURL(file));
-    setExif(null);
-    setDominantColors([]);
-    setQrResult(null);
-    extractExif(file);
-    extractColors(file);
-  }
-
-  function extractExif(file) {
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    setResults(null);
+    setError('');
     const img = new Image();
     img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      const info = {
+      setInfo({
         width: img.width, height: img.height,
         aspect: (img.width / img.height).toFixed(2),
         size: (file.size / 1024).toFixed(1) + ' KB',
-        type: file.type,
-        name: file.name,
-      };
-      setExif(info);
+        type: file.type || 'image',
+        name: file.name
+      });
     };
-    img.src = URL.createObjectURL(file);
+    img.src = url;
+    setLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await axios.post('/api/osint/photo', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 60000
+      });
+      setResults(res.data);
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Search failed');
+    }
+    setLoading(false);
   }
-
-  function extractColors(file) {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 100;
-      canvas.height = 100;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, 100, 100);
-      const data = ctx.getImageData(0, 0, 100, 100).data;
-      const colorMap = {};
-      for (let i = 0; i < data.length; i += 16) {
-        const r = Math.round(data[i] / 32) * 32;
-        const g = Math.round(data[i+1] / 32) * 32;
-        const b = Math.round(data[i+2] / 32) * 32;
-        const key = `${r},${g},${b}`;
-        colorMap[key] = (colorMap[key] || 0) + 1;
-      }
-      const sorted = Object.entries(colorMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
-      setDominantColors(sorted.map(([k]) => {
-        const [r,g,b] = k.split(',').map(Number);
-        return `rgb(${r},${g},${b})`;
-      }));
-    };
-    img.src = URL.createObjectURL(file);
-  }
-
-  const searchEngines = [
-    { name: 'Google Images', url: (preview) => `https://lens.google.com/uploadbyurl?url=UPLOAD` },
-    { name: 'Yandex', url: () => `https://yandex.com/images/search?rpt=imageview` },
-    { name: 'TinEye', url: () => `https://tineye.com/search` },
-    { name: 'Bing', url: () => `https://bing.com/images/search?q=reverse+image+search` },
-  ];
 
   return (
     <div style={S.section}>
-      <div style={S.label}>Upload a photo to search across the internet</div>
+      <div style={S.label}>Upload a face photo — searches across the web for matching person</div>
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <div style={{ flex: '0 0 280px' }}>
-          <div
-            onClick={() => fileRef.current?.click()}
-            style={{
-              width: '280px', height: '280px', border: '3px dashed var(--border)',
-              background: preview ? 'transparent' : 'var(--surface2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', overflow: 'hidden', position: 'relative'
-            }}>
+          <div onClick={() => fileRef.current?.click()}
+            style={{ width: '280px', height: '320px', border: '3px dashed var(--border)', background: preview ? '#000' : 'var(--surface2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden', position: 'relative' }}>
             {preview ? (
               <img src={preview} alt="Upload" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
             ) : (
-              <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
+              <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '20px' }}>
                 <svg style={{ width: '48px', height: '48px', margin: '0 auto 8px', display: 'block' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <p style={{ fontWeight: 700, margin: 0 }}>CLICK TO UPLOAD</p>
-                <p style={{ ...S.muted, margin: '4px 0 0' }}>JPG, PNG, WEBP</p>
+                <p style={{ fontWeight: 700, margin: 0 }}>UPLOAD PHOTO</p>
+                <p style={{ ...S.muted, margin: '4px 0 0', fontSize: '11px' }}>Find matching person across the web</p>
+              </div>
+            )}
+            {loading && (
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg className="animate-spin" style={{ width: '36px', height: '36px', color: '#fff' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
               </div>
             )}
           </div>
           <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
+          {info && (
+            <div style={{ ...S.muted, fontSize: '10px', marginTop: '8px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <span>{info.width}x{info.height}</span>
+              <span>{info.size}</span>
+            </div>
+          )}
         </div>
 
-        {preview && (
+        {error && (
           <div style={{ flex: 1, minWidth: '280px' }}>
-            <div style={S.label}>Image Analysis</div>
-            {exif && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', ...S.muted, fontSize: '11px', marginBottom: '16px' }}>
-                <div><strong>Name:</strong> {exif.name}</div>
-                <div><strong>Size:</strong> {exif.size}</div>
-                <div><strong>Dimensions:</strong> {exif.width} x {exif.height}</div>
-                <div><strong>Aspect:</strong> {exif.aspect}</div>
-                <div><strong>Type:</strong> {exif.type}</div>
+            <div style={{ padding: '14px', border: '3px solid #ef4444', background: 'rgba(239,68,68,0.1)', fontWeight: 700, fontSize: '13px', color: '#ef4444' }}>{error}</div>
+          </div>
+        )}
+
+        {results && !loading && (
+          <div style={{ flex: 1, minWidth: '280px' }}>
+            {results.image && (
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                <Badge>MD5: {results.image.md5?.slice(0,12)}...</Badge>
+                <Badge>{results.image.size_kb} KB</Badge>
               </div>
             )}
 
-            <div style={S.label}>Dominant Colors</div>
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
-              {dominantColors.map((c, i) => (
-                <div key={i} style={{ width: '36px', height: '36px', background: c, border: '2px solid var(--border)', borderRadius: '50%' }} title={c} />
-              ))}
-            </div>
+            {results.found_profiles?.length > 0 && (
+              <div style={{ marginBottom: '16px' }}>
+                <h3 style={{ fontWeight: 900, fontSize: '18px', color: '#22c55e', margin: '0 0 4px' }}>
+                  🎯 {results.profile_count} MATCH{results.profile_count > 1 ? 'ES' : ''} FOUND
+                </h3>
+                <p style={{ ...S.muted, fontSize: '11px', marginBottom: '12px' }}>
+                  Face/profile matches detected across the web
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {results.found_profiles.map((p, i) => (
+                    <Card key={i}>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                        {p.photo_url && (
+                          <img src={p.photo_url} alt="" style={{ width: '64px', height: '64px', objectFit: 'cover', border: '2px solid var(--border)', flexShrink: 0 }} />
+                        )}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--fg)' }}>
+                            {p.name || 'Unknown person'}
+                            {p.similarity && <span style={{ color: '#22c55e', marginLeft: '8px', fontSize: '11px' }}>{p.similarity}% match</span>}
+                          </div>
+                          <div style={{ ...S.muted, fontSize: '11px', marginTop: '2px' }}>Source: {p.source} · {p.platform || 'web'}</div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+                            {p.profile_url && (
+                              <a href={p.profile_url} target="_blank" rel="noopener noreferrer"
+                                style={{ ...S.pill, background: 'var(--accent)', color: '#fff', textDecoration: 'none', fontSize: '10px' }}>
+                                VIEW PROFILE
+                              </a>
+                            )}
+                            {p.source_url && (
+                              <a href={p.source_url} target="_blank" rel="noopener noreferrer"
+                                style={{ ...S.pill, background: 'var(--surface2)', color: 'var(--fg)', textDecoration: 'none', fontSize: '10px' }}>
+                                VIEW SOURCE
+                              </a>
+                            )}
+                            {p.image_url && (
+                              <a href={p.image_url} target="_blank" rel="noopener noreferrer"
+                                style={{ ...S.pill, background: 'var(--surface2)', color: 'var(--fg)', textDecoration: 'none', fontSize: '10px' }}>
+                                VIEW IMAGE
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
 
-            <div style={S.label}>Reverse Image Search</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <a href="https://lens.google.com" target="_blank" rel="noopener noreferrer" style={{ padding: '10px 16px', background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', color: 'var(--fg)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#4285f4', color: '#fff', padding: '0 6px', fontWeight: 900 }}>G</span> Google Lens
-              </a>
-              <a href="https://yandex.com/images/search?rpt=imageview" target="_blank" rel="noopener noreferrer" style={{ padding: '10px 16px', background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', color: 'var(--fg)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#fc3f1d', color: '#fff', padding: '0 6px', fontWeight: 900 }}>Y</span> Yandex
-              </a>
-              <a href="https://tineye.com" target="_blank" rel="noopener noreferrer" style={{ padding: '10px 16px', background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', color: 'var(--fg)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#000', color: '#fff', padding: '0 6px', fontWeight: 900 }}>T</span> TinEye
-              </a>
-              <a href="https://bing.com/images/search?q=reverse+image+search" target="_blank" rel="noopener noreferrer" style={{ padding: '10px 16px', background: 'var(--surface)', border: '3px solid var(--border)', boxShadow: '3px 3px 0px var(--border)', color: 'var(--fg)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#008373', color: '#fff', padding: '0 6px', fontWeight: 900 }}>B</span> Bing Visual Search
-              </a>
-            </div>
+            {(!results.found_profiles?.length) && (
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ padding: '14px', border: '3px solid #eab308', background: 'rgba(234,179,8,0.1)', fontWeight: 700, fontSize: '13px', color: '#eab308', marginBottom: '12px' }}>
+                  No matches found on Search4Faces or TinEye
+                </div>
+              </div>
+            )}
 
-            <div style={{ ...S.muted, marginTop: '12px', fontSize: '11px' }}>
-              <strong>Tip:</strong> Save the image first, then drag into Google Lens or TinEye for matching across the web.
-            </div>
+            {results.search_urls?.length > 0 && (
+              <div>
+                <div style={S.label}>Try manual search on these sites</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {results.search_urls.map((s, i) => (
+                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
+                      style={{ padding: '10px 14px', background: 'var(--surface)', border: '2px solid var(--border)', boxShadow: '2px 2px 0px var(--border)', textDecoration: 'none', fontSize: '12px', fontWeight: 700, color: 'var(--fg)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>{s.icon || ''} {s.name}</span>
+                      <span style={{ ...S.pill, fontSize: '8px', background: s.type === 'face' ? 'rgba(99,102,241,0.2)' : 'var(--surface2)', color: s.type === 'face' ? '#818cf8' : 'var(--muted)' }}>{s.type === 'face' ? 'FACE SEARCH' : 'IMAGE SEARCH'}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {results.image_hosted && (
+              <div style={{ ...S.muted, marginTop: '12px', fontSize: '10px' }}>
+                Image temporarily hosted at: <a href={results.image_hosted.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', fontWeight: 700 }}>{results.image_hosted.display_url}</a>
+              </div>
+            )}
           </div>
         )}
       </div>
