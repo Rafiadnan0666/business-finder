@@ -13,20 +13,32 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Advanced Business Finder - Discover Local Businesses Worldwide",
-  description: "Find and discover businesses, shops, restaurants, and services in any location worldwide using OpenStreetMap data. Search by category, radius, and location.",
+  description: "Find and discover businesses, shops, restaurants, and services in any location worldwide using OpenStreetMap data.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                var theme = localStorage.getItem('appkind_theme');
+                if (!theme) {
+                  theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                if (theme === 'light') {
+                  document.documentElement.classList.add('light');
+                }
+              } catch(e) {}
+            })();
+          `
+        }} />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
   );
 }
-
-
-
