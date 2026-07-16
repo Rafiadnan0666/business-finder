@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -37,6 +38,13 @@ export default function RootLayout({ children }) {
         }} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <nav style={{ background: 'var(--fg)', borderBottom: '3px solid var(--border)', padding: '0 16px' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '4px', height: '40px' }}>
+            <Link href="/" style={{ color: 'var(--bg)', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', textDecoration: 'none', padding: '0 12px', letterSpacing: '0.5px' }}>Business Finder</Link>
+            <span style={{ color: 'var(--muted)', fontSize: '10px' }}>|</span>
+            <Link href="/osint" style={{ color: 'var(--bg)', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', textDecoration: 'none', padding: '0 12px', letterSpacing: '0.5px' }}>OSINT Search</Link>
+          </div>
+        </nav>
         {children}
       </body>
     </html>
